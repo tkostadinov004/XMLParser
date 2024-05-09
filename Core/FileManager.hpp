@@ -2,6 +2,8 @@
 
 #include <fstream>
 #include "..\Utils\MyString\MyString.h"
+#include "..\Utils\Exceptions\FileError.h"
+#include "..\Utils\ErrorMessages.h"
 
 class FileManager
 {
@@ -20,9 +22,6 @@ public:
 	bool isOpen() const;
 };
 
-#include "..\Utils\Exceptions\FileError.h"
-#include "..\Utils\ErrorMessages.h"
-
 inline void FileManager::open(const MyString& path, std::ios_base::open_mode open_mode)
 {
 	_stream.close();
@@ -34,20 +33,20 @@ inline void FileManager::open(const MyString& path, std::ios_base::open_mode ope
 	_filepath = path;
 }
 
-void FileManager::close()
+inline void FileManager::close()
 {
 	_stream.close();
 	_filepath.clear();
 }
 
 template<typename T>
-void FileManager::save(const T& obj) const
+inline void FileManager::save(const T& obj) const
 {
 	saveAs(obj, _filepath);
 }
 
 template<typename T>
-void FileManager::saveAs(const T& obj, const MyString& path) const
+inline void FileManager::saveAs(const T& obj, const MyString& path) const
 {
 	std::ofstream ofs(path.c_str());
 	if (!ofs.is_open())
@@ -57,7 +56,7 @@ void FileManager::saveAs(const T& obj, const MyString& path) const
 	ofs << obj;
 }
 
-bool FileManager::isOpen() const
+inline bool FileManager::isOpen() const
 {
 	return _stream.is_open();
 }

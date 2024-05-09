@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "../MyVector/MyVector.hpp"
 
 class MyString
 {
@@ -63,6 +64,8 @@ public:
 	friend std::ostream& operator<<(std::ostream& os, const MyString& str);
 	friend std::istream& operator>>(std::istream& is, MyString& str);
 };
+std::istream& getline(std::istream& is, MyString& str, size_t count, char delim = '\n');
+MyVector<MyString> split(const MyString& str, char delim = ' ');
 
 MyString operator+(const MyString& lhs, const MyString& rhs);
 bool operator<(const MyString& lhs, const MyString& rhs);
