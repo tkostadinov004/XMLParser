@@ -1,17 +1,20 @@
 #pragma once
 #include <iostream>
+#include <functional>
 
 namespace HelperFunctions
 {
-	bool isPowerOfTwo(unsigned num);
-	unsigned getNextPowerOfTwo(unsigned num);
+	static bool isPowerOfTwo(unsigned num);
+	static unsigned getNextPowerOfTwo(unsigned num);
 }
 template <typename T>
 class MyVector
 {
+protected:
 	T* _data;
 	size_t _size = 0;
 	size_t _capacity = 1;
+private:
 	void copyFrom(const MyVector& other);
 	void moveFrom(MyVector&& other);
 	void free();
@@ -26,7 +29,7 @@ public:
 	MyVector(MyVector<T>&& other);
 	MyVector<T>& operator=(const MyVector& other);
 	MyVector<T>& operator=(MyVector&& other);
-	~MyVector();
+	virtual ~MyVector();
 
 	size_t size() const;
 	size_t capacity() const;
@@ -35,11 +38,15 @@ public:
 	const T& at(int index) const;
 	T& operator[](int index);
 	const T& operator[](int index) const;
-	T& front(int index);
-	const T& front(int index) const;
-	T& back(int index);
-	const T& back(int index) const;
+	T& front();
+	const T& front() const;
+	T& back();
+	const T& back() const;
 
+	bool contains(const T& element) const;
+	template <typename _In>
+	bool any(std::function<bool(const _In&)> pred) const;
+	int indexOf(const T& element) const;
 	bool empty() const;
 	void shrink_to_fit();
 	void clear();
@@ -56,6 +63,9 @@ public:
 	void append_range(const MyVector& vector);
 	void append_range(MyVector&& vector);
 	void pop_back();
+
+	template <typename _Out>
+	MyVector<_Out> convertTo(std::function<_Out()> selector);
 };
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const MyVector<T>& vector);
@@ -72,18 +82,23 @@ bool operator>(const MyVector<T>& lhs, const MyVector<T>& rhs);
 template <typename T>
 bool operator>=(const MyVector<T>& lhs, const MyVector<T>& rhs);
 
-inline bool HelperFunctions::isPowerOfTwo(unsigned num)
+static bool HelperFunctions::isPowerOfTwo(unsigned num)
 {
 	return (num & (num - 1)) == 0;
 }
 
-inline unsigned HelperFunctions::getNextPowerOfTwo(unsigned num)
+static unsigned HelperFunctions::getNextPowerOfTwo(unsigned num)
 {
-	return isPowerOfTwo(num) ? num << 1 : 1 << (unsigned)ceil(log2(num));
+	num |= num >> 1;
+	num |= num >> 2;
+	num |= num >> 4;
+	num |= num >> 8;
+	num |= num >> 16;
+	return num + 1;
 }
 
 template<typename T>
-inline void MyVector<T>::copyFrom(const MyVector<T>& other)
+void MyVector<T>::copyFrom(const MyVector<T>& other)
 {
 	this->_size = other._size;
 	this->_capacity = other._capacity;
@@ -95,7 +110,7 @@ inline void MyVector<T>::copyFrom(const MyVector<T>& other)
 }
 
 template<typename T>
-inline void MyVector<T>::moveFrom(MyVector<T>&& other)
+void MyVector<T>::moveFrom(MyVector<T>&& other)
 {
 	this->_size = other._size;
 	this->_capacity = other._capacity;
@@ -106,14 +121,14 @@ inline void MyVector<T>::moveFrom(MyVector<T>&& other)
 }
 
 template<typename T>
-inline void MyVector<T>::free()
+void MyVector<T>::free()
 {
 	delete[] _data;
 	_size = 0;
 }
 
 template<typename T>
-inline void MyVector<T>::resize(size_t capacity)
+void MyVector<T>::resize(size_t capacity)
 {
 	T* temp = _data;
 	_data = new T[capacity];
@@ -131,7 +146,7 @@ inline void MyVector<T>::resize(size_t capacity)
 }
 
 template<typename T>
-inline void MyVector<T>::shiftLeft(int index, size_t size)
+void MyVector<T>::shiftLeft(int index, size_t size)
 {
 	for (size_t i = index; i < _size - size; i++)
 	{
@@ -146,7 +161,7 @@ inline void MyVector<T>::shiftLeft(int index, size_t size)
 }
 
 template<typename T>
-inline void MyVector<T>::shiftRight(int index, size_t size)
+void MyVector<T>::shiftRight(int index, size_t size)
 {
 	if (_size + size > _capacity)
 	{
@@ -161,29 +176,29 @@ inline void MyVector<T>::shiftRight(int index, size_t size)
 }
 
 template<typename T>
-inline MyVector<T>::MyVector() : MyVector(1) {}
+MyVector<T>::MyVector() : MyVector(1) {}
 
 template<typename T>
-inline MyVector<T>::MyVector(size_t count)
+MyVector<T>::MyVector(size_t count)
 {
 	this->_capacity = count;
 	this->_data = new T[count];
 }
 
 template<typename T>
-inline MyVector<T>::MyVector(const MyVector& other)
+MyVector<T>::MyVector(const MyVector& other)
 {
 	copyFrom(other);
 }
 
 template<typename T>
-inline MyVector<T>::MyVector(MyVector<T>&& other)
+MyVector<T>::MyVector(MyVector<T>&& other)
 {
 	moveFrom(std::move(other));
 }
 
 template<typename T>
-inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& other)
+MyVector<T>& MyVector<T>::operator=(const MyVector<T>& other)
 {
 	if (this != &other)
 	{
@@ -194,7 +209,7 @@ inline MyVector<T>& MyVector<T>::operator=(const MyVector<T>& other)
 }
 
 template<typename T>
-inline MyVector<T>& MyVector<T>::operator=(MyVector&& other)
+MyVector<T>& MyVector<T>::operator=(MyVector&& other)
 {
 	if (this != &other)
 	{
@@ -205,25 +220,25 @@ inline MyVector<T>& MyVector<T>::operator=(MyVector&& other)
 }
 
 template<typename T>
-inline MyVector<T>::~MyVector()
+MyVector<T>::~MyVector()
 {
 	free();
 }
 
 template<typename T>
-inline size_t MyVector<T>::size() const
+size_t MyVector<T>::size() const
 {
 	return _size;
 }
 
 template<typename T>
-inline size_t MyVector<T>::capacity() const
+size_t MyVector<T>::capacity() const
 {
 	return _capacity;
 }
 
 template<typename T>
-inline T& MyVector<T>::at(int index)
+T& MyVector<T>::at(int index)
 {
 	if (index < 0 || index >= _size)
 	{
@@ -233,7 +248,7 @@ inline T& MyVector<T>::at(int index)
 }
 
 template<typename T>
-inline const T& MyVector<T>::at(int index) const
+const T& MyVector<T>::at(int index) const
 {
 	if (index < 0 || index >= _size)
 	{
@@ -243,19 +258,19 @@ inline const T& MyVector<T>::at(int index) const
 }
 
 template<typename T>
-inline T& MyVector<T>::operator[](int index)
+T& MyVector<T>::operator[](int index)
 {
 	return _data[index];
 }
 
 template<typename T>
-inline const T& MyVector<T>::operator[](int index) const
+const T& MyVector<T>::operator[](int index) const
 {
 	return _data[index];
 }
 
 template<typename T>
-inline T& MyVector<T>::front(int index)
+T& MyVector<T>::front()
 {
 	if (empty())
 	{
@@ -265,7 +280,7 @@ inline T& MyVector<T>::front(int index)
 }
 
 template<typename T>
-inline const T& MyVector<T>::front(int index) const
+const T& MyVector<T>::front() const
 {
 	if (empty())
 	{
@@ -275,7 +290,7 @@ inline const T& MyVector<T>::front(int index) const
 }
 
 template<typename T>
-inline T& MyVector<T>::back(int index)
+T& MyVector<T>::back()
 {
 	if (empty())
 	{
@@ -285,7 +300,7 @@ inline T& MyVector<T>::back(int index)
 }
 
 template<typename T>
-inline const T& MyVector<T>::back(int index) const
+const T& MyVector<T>::back() const
 {
 	if (empty())
 	{
@@ -295,25 +310,58 @@ inline const T& MyVector<T>::back(int index) const
 }
 
 template<typename T>
-inline bool MyVector<T>::empty() const
+bool MyVector<T>::contains(const T& element) const
+{
+	return indexOf(element) != -1;
+}
+
+template<typename T>
+template<typename _In>
+bool MyVector<T>::any(std::function<bool(const _In&)> pred) const
+{
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (pred(_data[i]))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+template<typename T>
+int MyVector<T>::indexOf(const T& element) const
+{
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (element == _data[i])
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+template<typename T>
+bool MyVector<T>::empty() const
 {
 	return _size == 0;
 }
 
 template<typename T>
-inline void MyVector<T>::shrink_to_fit()
+void MyVector<T>::shrink_to_fit()
 {
 	resize(_size);
 }
 
 template<typename T>
-inline void MyVector<T>::clear()
+void MyVector<T>::clear()
 {
 	shiftLeft(0, _size);
 }
 
 template<typename T>
-inline void MyVector<T>::insert(int index, const T& element)
+void MyVector<T>::insert(int index, const T& element)
 {
 	if (index < 0)
 	{
@@ -329,7 +377,7 @@ inline void MyVector<T>::insert(int index, const T& element)
 }
 
 template<typename T>
-inline void MyVector<T>::insert(int index, T&& element)
+void MyVector<T>::insert(int index, T&& element)
 {
 	if (index < 0)
 	{
@@ -345,7 +393,7 @@ inline void MyVector<T>::insert(int index, T&& element)
 }
 
 template<typename T>
-inline void MyVector<T>::insert_range(int index, const MyVector& vector)
+void MyVector<T>::insert_range(int index, const MyVector& vector)
 {
 	if (index < 0)
 	{
@@ -364,7 +412,7 @@ inline void MyVector<T>::insert_range(int index, const MyVector& vector)
 }
 
 template<typename T>
-inline void MyVector<T>::insert_range(int index, MyVector&& vector)
+void MyVector<T>::insert_range(int index, MyVector&& vector)
 {
 	if (index < 0)
 	{
@@ -376,7 +424,7 @@ inline void MyVector<T>::insert_range(int index, MyVector&& vector)
 		return;
 	}
 	shiftRight(index, vector._size);
-	
+
 	for (size_t i = 0; i < vector._size; i++)
 	{
 		_data[i + index] = std::move(vector._data[i]);
@@ -384,13 +432,13 @@ inline void MyVector<T>::insert_range(int index, MyVector&& vector)
 }
 
 template<typename T>
-inline void MyVector<T>::erase(int index)
+void MyVector<T>::erase(int index)
 {
 	erase(index, index);
 }
 
 template<typename T>
-inline void MyVector<T>::erase(int start, int end)
+void MyVector<T>::erase(int start, int end)
 {
 	if (start < 0 || end < 0 || start >= _size || start > end)
 	{
@@ -404,21 +452,21 @@ inline void MyVector<T>::erase(int start, int end)
 }
 
 template<typename T>
-inline void MyVector<T>::push_back(const T& element)
+void MyVector<T>::push_back(const T& element)
 {
 	shiftRight(_size, 1);
 	_data[_size - 1] = element;
 }
 
 template<typename T>
-inline void MyVector<T>::push_back(T&& element)
+void MyVector<T>::push_back(T&& element)
 {
 	shiftRight(_size, 1);
 	_data[_size - 1] = std::move(element);
 }
 
 template<typename T>
-inline void MyVector<T>::append(const T& element, size_t count)
+void MyVector<T>::append(const T& element, size_t count)
 {
 	for (size_t i = 0; i < count; i++)
 	{
@@ -427,7 +475,7 @@ inline void MyVector<T>::append(const T& element, size_t count)
 }
 
 template<typename T>
-inline void MyVector<T>::append(T&& element, size_t count)
+void MyVector<T>::append(T&& element, size_t count)
 {
 	for (size_t i = 0; i < count; i++)
 	{
@@ -436,7 +484,7 @@ inline void MyVector<T>::append(T&& element, size_t count)
 }
 
 template<typename T>
-inline void MyVector<T>::append_range(const MyVector& vector)
+void MyVector<T>::append_range(const MyVector& vector)
 {
 	shiftRight(_size, vector._size);
 	for (size_t i = 0; i < vector._size; i++)
@@ -446,7 +494,7 @@ inline void MyVector<T>::append_range(const MyVector& vector)
 }
 
 template<typename T>
-inline void MyVector<T>::append_range(MyVector&& vector)
+void MyVector<T>::append_range(MyVector&& vector)
 {
 	shiftRight(_size, vector._size);
 	for (size_t i = 0; i < vector._size; i++)
@@ -456,7 +504,7 @@ inline void MyVector<T>::append_range(MyVector&& vector)
 }
 
 template<typename T>
-inline void MyVector<T>::pop_back()
+void MyVector<T>::pop_back()
 {
 	if (empty())
 	{
@@ -466,7 +514,7 @@ inline void MyVector<T>::pop_back()
 }
 
 template<typename T>
-inline std::ostream& operator<<(std::ostream& os, const MyVector<T>& vector)
+std::ostream& operator<<(std::ostream& os, const MyVector<T>& vector)
 {
 	for (size_t i = 0; i < vector.size(); i++)
 	{
@@ -476,7 +524,7 @@ inline std::ostream& operator<<(std::ostream& os, const MyVector<T>& vector)
 }
 
 template<typename T>
-inline bool operator==(const MyVector<T>& lhs, const MyVector<T>& rhs)
+bool operator==(const MyVector<T>& lhs, const MyVector<T>& rhs)
 {
 	if (lhs.size() != rhs.size())
 	{
@@ -494,13 +542,13 @@ inline bool operator==(const MyVector<T>& lhs, const MyVector<T>& rhs)
 }
 
 template<typename T>
-inline bool operator!=(const MyVector<T>& lhs, const MyVector<T>& rhs)
+bool operator!=(const MyVector<T>& lhs, const MyVector<T>& rhs)
 {
 	return !(lhs == rhs);
 }
 
 template<typename T>
-inline bool operator<(const MyVector<T>& lhs, const MyVector<T>& rhs)
+bool operator<(const MyVector<T>& lhs, const MyVector<T>& rhs)
 {
 	for (size_t i = 0; i < std::min(lhs.size(), rhs.size()); i++)
 	{
@@ -513,19 +561,31 @@ inline bool operator<(const MyVector<T>& lhs, const MyVector<T>& rhs)
 }
 
 template<typename T>
-inline bool operator<=(const MyVector<T>& lhs, const MyVector<T>& rhs)
+bool operator<=(const MyVector<T>& lhs, const MyVector<T>& rhs)
 {
 	return !(rhs < lhs);
 }
 
 template<typename T>
-inline bool operator>(const MyVector<T>& lhs, const MyVector<T>& rhs)
+bool operator>(const MyVector<T>& lhs, const MyVector<T>& rhs)
 {
 	return !(lhs <= rhs);
 }
 
 template<typename T>
-inline bool operator>=(const MyVector<T>& lhs, const MyVector<T>& rhs)
+bool operator>=(const MyVector<T>& lhs, const MyVector<T>& rhs)
 {
 	return !(lhs < rhs);
+}
+
+template<typename T>
+template<typename _Out>
+MyVector<_Out> MyVector<T>::convertTo(std::function<_Out()> selector)
+{
+	MyVector<_Out> result;
+	for (size_t i = 0; i < _size; i++)
+	{
+		result.push_back(selector(_data[i]));
+	}
+	return result;
 }

@@ -1,6 +1,6 @@
 #include <iostream>
+#include <sstream>
 #include "MyString.h"
-#include "../MyVector/MyVector.hpp"
 #pragma warning (disable: 4996)
 
 namespace HelperFunctions
@@ -95,6 +95,11 @@ namespace HelperFunctions
 		}
 		return !(*pattern);
 	}
+
+	bool isWhitespace(char c)
+	{
+		return c == ' ' || c == '\n' || c == '\t' || c == '\f' || c == '\v' || c == '\r';
+	}
 }
 
 void MyString::resize(size_t newCapacity)
@@ -147,7 +152,7 @@ MyString::MyString(size_t capacity)
 
 MyString::MyString(const char* str)
 {
-	this->_capacity = std::max(8u, HelperFunctions::getNextPowerOfTwo(_size));
+	this->_capacity = std::max(8u, HelperFunctions::getNextPowerOfTwo(_size + 1));
 	this->_data = new char[_capacity] {0};
 	append(str);
 }
@@ -352,7 +357,7 @@ void MyString::replace(const MyString& str, int index)
 
 void MyString::push_back(char c)
 {
-	if (_size + 1 > _capacity)
+	if (_size + 1 >= _capacity)
 	{
 		resize(std::max(8u, HelperFunctions::getNextPowerOfTwo(_size + 1)));
 	}
@@ -370,7 +375,7 @@ void MyString::pop_back()
 
 MyString& MyString::append(char c, size_t count)
 {
-	if (_size + 1 + count > _capacity)
+	if (_size + 1 + count >= _capacity)
 	{
 		resize(std::max(8u, HelperFunctions::getNextPowerOfTwo(_size + 1 + count)));
 	}
@@ -401,7 +406,7 @@ MyString& MyString::append(const char* str, size_t count)
 	}
 
 	size_t inputSize = strlen(str);
-	if (_size + ((inputSize + 1) * count) > _capacity)
+	if (_size + ((inputSize + 1) * count) >= _capacity)
 	{
 		resize(std::max(8u, HelperFunctions::getNextPowerOfTwo(_size + ((inputSize + 1) * count))));
 	}
@@ -415,14 +420,80 @@ MyString& MyString::append(const char* str, size_t count)
 	return *this;
 }
 
+MyString& MyString::prepend(char c, size_t count)
+{
+	for (size_t i = 0; i < count; i++)
+	{
+		insert(c, 0);
+	}
+	return *this;
+}
+
+MyString& MyString::prepend(const MyString& str, size_t count)
+{
+	return prepend(str.c_str(), count);
+}
+
+MyString& MyString::prepend(const char* str, size_t count)
+{
+	for (size_t i = 0; i < count; i++)
+	{
+		insert_range(str, 0);
+	}
+	return *this;
+}
+
 MyString& MyString::operator+=(const char* str)
 {
 	return append(str);
 }
 
+MyString& MyString::operator+=(char c)
+{
+	push_back(c);
+	return *this;
+}
+
 MyString& MyString::operator+=(const MyString& str)
 {
 	return append(str.c_str());
+}
+
+MyString MyString::takeWhile(bool(*pred)(char)) const
+{
+	std::stringstream ss(c_str());
+	MyString result;
+	while (pred(ss.peek()))
+	{
+		result += ss.get();
+	}
+	return result;
+}
+
+MyString MyString::skipWhile(bool(*pred)(char)) const
+{
+	std::stringstream ss(c_str());
+	while (pred(ss.peek()))
+	{
+		ss.ignore();
+	}
+	return MyString(ss.str().c_str());
+}
+
+MyString MyString::trim() const
+{
+	MyString result = trimEnd();
+	return result.trimStart();
+}
+
+MyString MyString::trimStart() const
+{
+	return skipWhile([](char c) {return !HelperFunctions::isWhitespace(c);});
+}
+
+MyString MyString::trimEnd() const
+{
+	return takeWhile(HelperFunctions::isWhitespace);
 }
 
 void MyString::swap(MyString& other)
@@ -522,32 +593,63 @@ std::istream& getline(std::istream& is, MyString& str, size_t count, char delim)
 	return is;
 }
 
-MyVector<MyString> split(const MyString& str, char delim)
+MyVector<MyString> MyString::split(char delim, bool removeEmptyEntries) const
 {
 	MyVector<MyString> splitted;
 	int index = 0;
 
 	MyString temp;
-	for (size_t i = 0; i < str.length(); i++)
+	for (size_t i = 0; i < _size; i++)
 	{
-		if (str[i] == delim)
+		if (_data[i] == delim)
 		{
+			if (removeEmptyEntries && temp.empty())
+			{
+				continue;
+			}
 			splitted.push_back(temp);
 			temp.clear();
 		}
 		else
 		{
-			temp.append(str[i]);
+			temp.append(_data[i]);
 		}
 	}
 	splitted.push_back(temp);
 	return splitted;
 }
 
+MyString join(const MyVector<MyString>& str, const MyString& separator)
+{
+	if (str.empty())
+	{
+		return "";
+	}
+
+	MyString result;
+	for (size_t i = 0; i < str.size() - 1; i++)
+	{
+		result += str[i] + separator;
+	}
+	result += str.back();
+	return result;
+}
+
 MyString operator+(const MyString& lhs, const MyString& rhs)
 {
 	MyString result(lhs.length() + rhs.length());
 	return result.append(lhs).append(rhs);
+}
+
+MyString operator+(const MyString& lhs, char c)
+{
+	MyString result = lhs;
+	return result += c;
+}
+
+MyString operator+(char c, const MyString& str)
+{
+	return str + c;
 }
 
 bool operator<(const MyString& lhs, const MyString& rhs)

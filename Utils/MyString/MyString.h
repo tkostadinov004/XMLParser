@@ -45,8 +45,18 @@ public:
 	MyString& append(char c, size_t count = 1);
 	MyString& append(const MyString& str, size_t count = 1);
 	MyString& append(const char* str, size_t count = 1);
+	MyString& prepend(char c, size_t count = 1);
+	MyString& prepend(const MyString& str, size_t count = 1);
+	MyString& prepend(const char* str, size_t count = 1);
 	MyString& operator+=(const char* str);
+	MyString& operator+=(char c);
 	MyString& operator+=(const MyString& str);
+	MyString takeWhile(bool(*pred)(char)) const;
+	MyString skipWhile(bool(*pred)(char)) const;
+	MyString trim() const;
+	MyString trimStart() const;
+	MyString trimEnd() const;
+	MyVector<MyString> split(char delim = ' ', bool removeEmptyEntries = false) const;
 	void swap(MyString& other);
 
 	int find(const char* pattern, size_t fromPosition = 0) const;
@@ -65,9 +75,11 @@ public:
 	friend std::istream& operator>>(std::istream& is, MyString& str);
 };
 std::istream& getline(std::istream& is, MyString& str, size_t count, char delim = '\n');
-MyVector<MyString> split(const MyString& str, char delim = ' ');
+MyString join(const MyVector<MyString>& str, const MyString& separator = " ");
 
 MyString operator+(const MyString& lhs, const MyString& rhs);
+MyString operator+(const MyString& lhs, char c);
+MyString operator+(char c, const MyString& str);
 bool operator<(const MyString& lhs, const MyString& rhs);
 bool operator<=(const MyString& lhs, const MyString& rhs);
 bool operator>(const MyString& lhs, const MyString& rhs);
