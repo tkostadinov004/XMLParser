@@ -145,7 +145,7 @@ void MyString::free()
 MyString::MyString(const char* start, const char* end)
 {
 	this->_capacity = std::max(8u, HelperFunctions::getNextPowerOfTwo(end - start + 2));
-	this->_size = end - start + 1;
+	this->_size = end - start;
 	this->_data = new char[_capacity] {0};
 	int index = 0;
 	while (start < end)
