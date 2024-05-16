@@ -8,24 +8,31 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	static int indentationLevel = 0;
 
 	MyString tag = getTagName();
-	os << std::setfill(' ') << std::setw(indentationLevel * 3) << "<" << tag;
+	os << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "<" << tag;
 	if (!this->_attributes.empty())
 	{
 		os << " " << join(this->_attributes.convertTo<MyString>([](const XMLAttribute& attr) {return attr.getKey() + "=\"" + attr.getValue() + "\"";}));
 	}
+	if (_children.empty())
+	{
+		return os << "/>";
+	}
 	os << ">";
+	if (_children.size() == 1 && dynamic_cast<XMLTextNode*>(_children.back()))
+	{
+		_children.back()->print(os);
+		os << "</" << tag << ">";
+		return os;
+	}
 	for (size_t i = 0; i < _children.size(); i++)
 	{
+		os << std::endl;
 		indentationLevel++;
-		if (!dynamic_cast<XMLTextNode*>(_children[i]))
-		{
-			os << std::endl;
-			indentationLevel--;
-		}
+		
 		_children[i]->print(os, indentationLevel);
 		indentationLevel--;
 	}
-	os << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</" << tag << ">";
+	os << std::endl << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</" << tag << ">";
 	return os;
 }
 

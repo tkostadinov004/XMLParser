@@ -15,6 +15,11 @@ XMLNode* XMLNode::rightSibling()
 	return _rightSibling;
 }
 
+void XMLNode::setRightSibling(XMLNode* node)
+{
+	_rightSibling = node;
+}
+
 const XMLNode* XMLNode::rightSibling() const
 {
 	return _rightSibling;

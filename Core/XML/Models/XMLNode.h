@@ -1,6 +1,7 @@
 #pragma once
 #include <ostream>
 #include "../../../Utils/MyString/MyString.h"
+
 class XMLNode
 {
 	XMLNode* _parent = nullptr;
@@ -10,6 +11,7 @@ public:
 	XMLNode* parent();
 	const XMLNode* parent() const;
 	XMLNode* rightSibling();
+	void setRightSibling(XMLNode* node);
 	const XMLNode* rightSibling() const;
 	void setParent(XMLNode* node);
 

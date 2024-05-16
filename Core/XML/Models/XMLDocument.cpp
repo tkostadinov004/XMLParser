@@ -42,10 +42,5 @@ XMLElementNode* XMLDocument::root() const
 
 std::ostream& operator<<(std::ostream& os, const XMLDocument& doc)
 {
-	MyVector<const XMLNode*> traversal = doc.traverse();
-	for (size_t i = 0; i < traversal.size(); i++)
-	{
-		traversal[i]->print(std::cout);
-	}
-	return std::cout;
+	return doc.root()->print(std::cout);
 }

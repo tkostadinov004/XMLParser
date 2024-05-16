@@ -18,9 +18,9 @@ void XMLTextNode::setTextContent(const MyString& textContent)
 
 std::ostream& XMLTextNode::print(std::ostream& os, int indent) const
 {
-	if (rightSibling())
+	/*if (parent()->)
 	{
-		os  << std::setfill(' ') << std::setw(indent * 3) << "";
-	}
-	return os << _textContent;
+
+	}*/
+	return os << std::setfill(' ') << std::setw(indent * 3) << "" << _textContent;
 }

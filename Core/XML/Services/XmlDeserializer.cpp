@@ -92,9 +92,17 @@ XMLDocument XmlDeserializer::deserialize()
 			currentTagName += takeWhile(ifs, [](char c) {return !isWhitespace(c) && !isTerminator(c);}).trim();
 			c = ifs.get();
 
-			current->setTagName(currentTagName);
 			current->setParent(previousParent);
-			tags.push(currentTagName);
+			bool isSelfClosing = currentTagName.ends_with("/");
+			if (isSelfClosing)
+			{
+				currentTagName = currentTagName.substr(0, currentTagName.length() - 1);	
+			}
+			else
+			{
+				tags.push(currentTagName);
+			}
+			current->setTagName(currentTagName);
 			currentTagName.clear();
 
 			if (isWhitespace(c))
@@ -117,8 +125,15 @@ XMLDocument XmlDeserializer::deserialize()
 				}
 				else
 				{
+					if (!previousParent->children().empty())
+					{
+						previousParent->children().back()->setRightSibling(current);
+					}	
 					previousParent->addChild(current);
-					previousParent = current;
+					if (!isSelfClosing)
+					{
+						previousParent = current;
+					}
 					current = new XMLElementNode();
 				}
 				continue;
@@ -140,7 +155,12 @@ XMLDocument XmlDeserializer::deserialize()
 				MyString nsName = current->getTagName().split(':')[0];
 				current->assignNamespace(XMLNamespace(nsName, current->getTagName().split(':')[1]));
 			}
-			previousParent->addChild(current);
+
+			if (!previousParent->children().empty())
+			{
+				previousParent->children().back()->setRightSibling(current);
+			}
+			previousParent->addChild(current);		
 			previousParent = current;
 			current = new XMLElementNode();
 		}
