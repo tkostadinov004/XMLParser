@@ -2,6 +2,7 @@
 #include <iostream>
 #include "../MyVector/MyVector.hpp"
 
+static const size_t npos = -1;
 class MyString
 {
 	char* _data = nullptr;
@@ -12,6 +13,8 @@ class MyString
 	void copyFrom(const MyString& other);
 	void moveFrom(MyString&& other);
 	void free();
+	
+	MyString(const char* start, const char* end);
 public:
 	MyString();
 	explicit MyString(size_t capacity);
@@ -56,6 +59,7 @@ public:
 	MyString trim() const;
 	MyString trimStart() const;
 	MyString trimEnd() const;
+	MyString substr(size_t pos, size_t length = npos) const;
 	MyVector<MyString> split(char delim = ' ', bool removeEmptyEntries = false) const;
 	void swap(MyString& other);
 

@@ -1,37 +1,17 @@
 #pragma once
-#include "../../../Utils/MyVector/MyVector.hpp"
+#include <ostream>
 #include "../../../Utils/MyString/MyString.h"
-#include "XMLAttribute.h"
-#include "XMLNamespace.h"
-#include "XMLElement.h"
-
-class XMLNode : public XMLElement
+class XMLNode
 {
-	const XMLNamespace* _namespace = nullptr;
-	MyString _tagName;
 	XMLNode* _parent = nullptr;
-	MyVector<XMLAttribute> _attributes;
-	MyVector<XMLElement*> _children;
-	MyVector<XMLNamespace> _definedNamespaces;
-
-	std::ostream& print(std::ostream& os) const override;
+	XMLNode* _rightSibling = nullptr;
 public:
-	XMLNode() = default;
-	explicit XMLNode(const MyString& tagName, XMLNode* parent = nullptr);
-
-	const XMLNamespace* getNamespace() const;
-	const MyString& getTagName() const;
+	explicit XMLNode(XMLNode* parent = nullptr);
 	XMLNode* parent();
-	const MyVector<XMLAttribute>& attributes() const;
-	const MyVector<XMLElement*>& children() const;
-	const MyVector<XMLNamespace>& definedNamespaces() const;
-	bool canHaveNamespace(const MyString& nsName) const;
+	const XMLNode* parent() const;
+	XMLNode* rightSibling();
+	const XMLNode* rightSibling() const;
+	void setParent(XMLNode* node);
 
-	void setTagName(const MyString& tagName);
-	void setParent(XMLNode* parent);
-	void setNamespace(const XMLNamespace& xmlNamespace);
-	void addAttribute(const XMLAttribute& attribute);
-	void addAttributes(const MyVector<XMLAttribute>& attributes);
-	void addChild(XMLElement* child);
-	void defineNamespace(XMLNamespace& xmlNamespace);
+	virtual std::ostream& print(std::ostream& os, int indent = 0) const = 0;
 };

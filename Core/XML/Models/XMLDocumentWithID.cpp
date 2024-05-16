@@ -1,7 +1,7 @@
 #include "XMLDocumentWithID.h"
 
 
-void XMLDocumentWithID::resolveIdConflicts(XMLNode* root, GroupVector& groups)
+void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root, GroupVector& groups)
 {
 	if (!root)
 	{

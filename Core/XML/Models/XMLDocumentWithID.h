@@ -3,7 +3,7 @@
 
 class XMLDocumentWithID : public XMLDocument
 {
-	void resolveIdConflicts(XMLNode* node, GroupVector& groups);
+	void resolveIdConflicts(XMLElementNode* node, GroupVector& groups);
 public:
 	void resolveIdConflicts();
 };

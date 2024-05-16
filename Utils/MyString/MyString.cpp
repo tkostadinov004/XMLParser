@@ -142,6 +142,19 @@ void MyString::free()
 	this->_size = this->_capacity = 0;
 }
 
+MyString::MyString(const char* start, const char* end)
+{
+	this->_capacity = std::max(8u, HelperFunctions::getNextPowerOfTwo(end - start + 2));
+	this->_size = end - start + 1;
+	this->_data = new char[_capacity] {0};
+	int index = 0;
+	while (start < end)
+	{
+		_data[index++] = *start;
+		start++;
+	}
+}
+
 MyString::MyString() : MyString("") {}
 
 MyString::MyString(size_t capacity)
@@ -152,7 +165,7 @@ MyString::MyString(size_t capacity)
 
 MyString::MyString(const char* str)
 {
-	this->_capacity = std::max(8u, HelperFunctions::getNextPowerOfTwo(_size + 1));
+	this->_capacity = std::max(8u, HelperFunctions::getNextPowerOfTwo(strlen(str) + 1));
 	this->_data = new char[_capacity] {0};
 	append(str);
 }
@@ -463,7 +476,7 @@ MyString MyString::takeWhile(bool(*pred)(char)) const
 {
 	std::stringstream ss(c_str());
 	MyString result;
-	while (pred(ss.peek()))
+	while (pred(ss.peek()) && !ss.eof())
 	{
 		result += ss.get();
 	}
@@ -472,12 +485,12 @@ MyString MyString::takeWhile(bool(*pred)(char)) const
 
 MyString MyString::skipWhile(bool(*pred)(char)) const
 {
-	std::stringstream ss(c_str());
-	while (pred(ss.peek()))
+	const char* ptr = _data;
+	while (*ptr && pred(*ptr))
 	{
-		ss.ignore();
+		ptr++;
 	}
-	return MyString(ss.str().c_str());
+	return MyString(ptr);
 }
 
 MyString MyString::trim() const
@@ -488,12 +501,38 @@ MyString MyString::trim() const
 
 MyString MyString::trimStart() const
 {
-	return skipWhile([](char c) {return !HelperFunctions::isWhitespace(c);});
+	const char* ptr = _data;
+	while (*ptr && HelperFunctions::isWhitespace(*ptr))
+	{
+		ptr++;
+	}
+	return MyString(ptr);
 }
 
 MyString MyString::trimEnd() const
 {
-	return takeWhile(HelperFunctions::isWhitespace);
+	const char* ptr = _data + _size - 1;
+	size_t count = 0;
+	while (*ptr && HelperFunctions::isWhitespace(*ptr))
+	{
+		count++;
+		ptr--;
+	}
+	return substr(0, _size - count);
+}
+
+MyString MyString::substr(size_t pos, size_t length) const
+{
+	if (length == npos)
+	{
+		length = _size - pos;
+	}
+
+	if (pos + length > _size)
+	{
+		throw std::exception("Substring goes out of bounds!");
+	}
+	return MyString(_data + pos, _data + pos + length);
 }
 
 void MyString::swap(MyString& other)

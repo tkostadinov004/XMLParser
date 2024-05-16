@@ -44,8 +44,7 @@ public:
 	const T& back() const;
 
 	bool contains(const T& element) const;
-	template <typename _In>
-	bool any(std::function<bool(const _In&)> pred) const;
+	bool any(std::function<bool(const T&)> pred) const;
 	int indexOf(const T& element) const;
 	bool empty() const;
 	void shrink_to_fit();
@@ -65,7 +64,7 @@ public:
 	void pop_back();
 
 	template <typename _Out>
-	MyVector<_Out> convertTo(std::function<_Out()> selector);
+	MyVector<_Out> convertTo(std::function<_Out(const T&)> selector) const;
 };
 template <typename T>
 std::ostream& operator<<(std::ostream& os, const MyVector<T>& vector);
@@ -316,8 +315,7 @@ bool MyVector<T>::contains(const T& element) const
 }
 
 template<typename T>
-template<typename _In>
-bool MyVector<T>::any(std::function<bool(const _In&)> pred) const
+bool MyVector<T>::any(std::function<bool(const T&)> pred) const
 {
 	for (size_t i = 0; i < _size; i++)
 	{
@@ -580,7 +578,7 @@ bool operator>=(const MyVector<T>& lhs, const MyVector<T>& rhs)
 
 template<typename T>
 template<typename _Out>
-MyVector<_Out> MyVector<T>::convertTo(std::function<_Out()> selector)
+MyVector<_Out> MyVector<T>::convertTo(std::function<_Out(const T&)> selector) const
 {
 	MyVector<_Out> result;
 	for (size_t i = 0; i < _size; i++)

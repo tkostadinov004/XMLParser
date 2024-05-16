@@ -7,6 +7,7 @@ class MyStack : private MyVector<T>
 public:
 	using MyVector<T>::size;
 	using MyVector<T>::empty;
+	using MyVector<T>::convertTo;
 	void push(const T& element);
 	const T& pop();
 	const T& peek() const;

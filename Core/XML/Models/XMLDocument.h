@@ -1,14 +1,14 @@
 #pragma once
 #include <ostream>
-#include "XMLNode.h"
+#include "XMLElementNode.h"
 #include "GroupVector.h"
 class XMLDocument
 {
 protected:
-	XMLNode* _root = nullptr;
+	XMLElementNode* _root = nullptr;
 public:
-	explicit XMLDocument(XMLNode* root = nullptr);
-	MyVector<const XMLElement*> traverse() const;
-	XMLNode* root() const;
+	explicit XMLDocument(XMLElementNode* root = nullptr);
+	MyVector<const XMLNode*> traverse() const;
+	XMLElementNode* root() const;
 };
 std::ostream& operator<<(std::ostream& os, const XMLDocument& doc);
