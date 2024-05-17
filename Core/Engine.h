@@ -1,13 +1,15 @@
 #pragma once
-
 #include <iostream>
-#include "Controller.h"
-#include "FileManager.hpp"
+#include "XMLController.h"
+#include "XPathController.h"
+#include "../Utils/Messages/OutputMessages.h"
 
 class Engine
 {
-	Controller _controller;
-	FileManager _fileManager;
+	XMLController _xmlController;
+	XPathController _xPathController;
+
+	MyString handleCommandLine(const MyVector<MyString>& commandLine);
 public:
-	void run() const;
+	void run();
 };
