@@ -31,7 +31,7 @@ static MyString takeWhile(std::istream& is, bool(*pred)(char))
 	return result;
 }
 
-XMLAttribute XmlDeserializer::deserializeAttribute(const MyString& arg)
+XMLAttribute XMLDeserializer::deserializeAttribute(const MyString& arg)
 {
 	XMLAttribute result;
 	MyVector<MyString> splitted = arg.split('=');
@@ -41,17 +41,17 @@ XMLAttribute XmlDeserializer::deserializeAttribute(const MyString& arg)
 	return result;
 }
 
-MyVector<XMLAttribute> XmlDeserializer::deserializeAttributes(std::istream& is)
+MyVector<XMLAttribute> XMLDeserializer::deserializeAttributes(std::istream& is)
 {
 	return MyVector<XMLAttribute>();
 }
 
-XmlDeserializer::XmlDeserializer(const MyString& path)
+XMLDeserializer::XMLDeserializer(const MyString& path)
 {
 	setWorkingPath(path);
 }
 
-XMLDocument XmlDeserializer::deserialize()
+XMLDocument XMLDeserializer::deserialize()
 {
 	std::ifstream ifs(_path.c_str(), std::ios::in | std::ios::out);
 	if (!ifs.is_open())
@@ -162,9 +162,10 @@ XMLDocument XmlDeserializer::deserialize()
 			state = State::CurrentlyReadingPlainText;
 			currentPlainText += c;
 		}
-		else if (state == State::CurrentlyReadingPlainText && !isWhitespace(c))
+		else if (state == State::CurrentlyReadingPlainText)
 		{
-			currentPlainText += takeWhile(ifs, [](char c) {return c != '<';}).trim();
+			currentPlainText += takeWhile(ifs, [](char c) {return c != '<';});
+			currentPlainText = currentPlainText.trim();
 			if (!currentPlainText.empty())
 			{
 				previousParent->addChild(new XMLTextNode(currentPlainText));
@@ -199,12 +200,12 @@ XMLDocument XmlDeserializer::deserialize()
 	return result;
 }
 
-const MyString& XmlDeserializer::getWorkingPath() const
+const MyString& XMLDeserializer::getWorkingPath() const
 {
 	return _path;
 }
 
-void XmlDeserializer::setWorkingPath(const MyString& path)
+void XMLDeserializer::setWorkingPath(const MyString& path)
 {
 	this->_path = path;
 }

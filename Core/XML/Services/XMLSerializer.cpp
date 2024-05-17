@@ -6,7 +6,7 @@ XMLSerializer::XMLSerializer(const MyString& path)
     setWorkingPath(path);
 }
 
-void XMLSerializer::serialize(const XMLDocument& document)
+void XMLSerializer::serializeToStream(const XMLDocument& document)
 {
     std::ofstream ofs(_path.c_str());
     ofs << document;

@@ -7,7 +7,7 @@ class XMLSerializer
 	MyString _path;
 public:
 	explicit XMLSerializer(const MyString& path);
-	void serialize(const XMLDocument& document);
+	void serializeToStream(const XMLDocument& document);
 	const MyString& getWorkingPath() const;
 	void setWorkingPath(const MyString& path);
 };

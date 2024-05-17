@@ -56,12 +56,17 @@ const MyString& XMLElementNode::getTagName() const
 	return _tagName;
 }
 
-const MyVector<XMLAttribute>& XMLElementNode::attributes() const
+const XMLAttributeCollection& XMLElementNode::attributes() const
 {
 	return _attributes;
 }
 
 const MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children() const
+{
+	return _children;
+}
+
+MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children()
 {
 	return _children;
 }
@@ -129,6 +134,11 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 void XMLElementNode::addChild(XMLNode* child)
 {
 	this->_children.push_back(child);
+}
+
+void XMLElementNode::addChild(const XMLNode& child)
+{
+	this->_children.push_back(child.clone());
 }
 
 void XMLElementNode::defineNamespace(XMLNamespace& xmlNamespace)

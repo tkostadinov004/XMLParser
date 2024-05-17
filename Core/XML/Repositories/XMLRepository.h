@@ -1,20 +1,20 @@
 #pragma once
 #include "Repository.hpp"
 #include "../Models/XMLElementNode.h"
-#include "../Models/XMLDocument.h"
 #include "../../../Utils/MyString/MyString.h"
+#include "..\Models\XMLElementNodeWithID.h"
+#include "..\Models\XMLDocumentWithID.h"
 
-class XMLRepository : public Repository<XMLElementNode>
+class XMLRepository : public Repository<XMLElementNodeWithID>
 {
-	XMLDocument _xmlDocument;
+	XMLDocumentWithID _xmlDocument;
 public:
 	void open(const MyString& path);
 	void close();
-	void save();
-	void saveas(const MyString& path);
+	void saveAs(const MyString& path);
 
-	void add(const XMLElementNode& item) override;
-	bool remove(const XMLElementNode& item) override;
+	void add(const XMLElementNodeWithID& item) override;
+	bool remove(const XMLElementNodeWithID& item) override;
 	bool remove(const MyString& id);
-	const XMLElementNode*& find(bool(*pred)(XMLElementNode)) const override;
+	const XMLElementNodeWithID*& find(bool(*pred)(XMLElementNodeWithID)) const override;
 };

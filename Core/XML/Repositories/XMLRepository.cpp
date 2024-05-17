@@ -1,30 +1,29 @@
 #include "XMLRepository.h"
-#include "..\Services\XmlDeserializer.h"
+#include "..\Services\XMLDeserializer.h"
+#include "..\Services\XMLSerializer.h"
 
 void XMLRepository::open(const MyString& path)
 {
-    XmlDeserializer deserializer(path);
-    _xmlDocument = deserializer.deserialize();
-    std::cout << _xmlDocument << std::endl;
+    XMLDeserializer deserializer(path);
+    _xmlDocument = XMLDocumentWithID(deserializer.deserialize());
 }
 
 void XMLRepository::close()
 {
+    _xmlDocument = XMLDocumentWithID();
 }
 
-void XMLRepository::save()
+void XMLRepository::saveAs(const MyString& path)
+{
+    XMLSerializer serializer(path);
+    serializer.serializeToStream(XMLDocument(_xmlDocument.root()));
+}
+
+void XMLRepository::add(const XMLElementNodeWithID& item)
 {
 }
 
-void XMLRepository::saveas(const MyString& path)
-{
-}
-
-void XMLRepository::add(const XMLElementNode& item)
-{
-}
-
-bool XMLRepository::remove(const XMLElementNode& item)
+bool XMLRepository::remove(const XMLElementNodeWithID& item)
 {
     return false;
 }
@@ -34,9 +33,9 @@ bool XMLRepository::remove(const MyString& id)
     return false;
 }
 
-const XMLElementNode*& XMLRepository::find(bool(*pred)(XMLElementNode)) const
+const XMLElementNodeWithID*& XMLRepository::find(bool(*pred)(XMLElementNodeWithID)) const
 {
-    const XMLElementNode* asd = new XMLElementNode("");
+    const XMLElementNodeWithID* asd = new XMLElementNodeWithID();
     return asd;
     // TODO: insert return statement here
 }

@@ -5,12 +5,14 @@
 #include "XMLNamespace.h"
 #include "XMLNode.h"
 #include "..\..\..\Utils\PointerWrapper\PointerWrapper.hpp"
+#include "XMLAttributeCollection.h"
 
 class XMLElementNode : public XMLNode
 {
+protected:
 	const XMLNamespace* _namespace = nullptr;
 	MyString _tagName;
-	MyVector<XMLAttribute> _attributes;
+	XMLAttributeCollection _attributes;
 	MyVector<PointerWrapper<XMLNode>> _children;
 	MyVector<XMLNamespace> _definedNamespaces;
 public:
@@ -20,8 +22,9 @@ public:
 
 	const XMLNamespace* getNamespace() const;
 	const MyString& getTagName() const;
-	const MyVector<XMLAttribute>& attributes() const;
+	const XMLAttributeCollection& attributes() const;
 	const MyVector<PointerWrapper<XMLNode>>& children() const;
+	MyVector<PointerWrapper<XMLNode>>& children();
 	const MyVector<XMLNamespace>& definedNamespaces() const;
 	const XMLNamespace* getDefinedNamespaceByName(const MyString& nsName) const;
 
@@ -30,7 +33,11 @@ public:
 	void addAttribute(const XMLAttribute& attribute);
 	void addAttributes(const MyVector<XMLAttribute>& attributes);
 	void addChild(XMLNode* child);
+	void addChild(const XMLNode& child);
 	void defineNamespace(XMLNamespace& xmlNamespace);
 
 	std::ostream& print(std::ostream& os, int indent = 0) const override;
+
+	friend class XMLDocument;
+	friend class XMLDocumentWithID;
 };
