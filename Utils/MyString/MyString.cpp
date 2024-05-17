@@ -75,6 +75,7 @@ namespace HelperFunctions
 				}
 			}
 		}
+		delete[] prefixes;
 		return matchIndex;
 	}
 
