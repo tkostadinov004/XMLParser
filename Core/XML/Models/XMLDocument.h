@@ -5,10 +5,13 @@
 class XMLDocument
 {
 protected:
-	XMLElementNode* _root = nullptr;
+	XMLElementNode _root;
 public:
-	explicit XMLDocument(XMLElementNode* root = nullptr);
-	MyVector<const XMLNode*> traverse() const;
-	XMLElementNode* root() const;
+	virtual ~XMLDocument() = default;
+	XMLDocument() = default;
+	explicit XMLDocument(const XMLElementNode& root);
+	MyVector<PointerWrapper<XMLNode>> traverse() const;
+	XMLElementNode& root();
+	const XMLElementNode& root() const;
 };
 std::ostream& operator<<(std::ostream& os, const XMLDocument& doc);

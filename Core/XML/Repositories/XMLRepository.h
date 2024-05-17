@@ -1,10 +1,10 @@
 #pragma once
 #include "Repository.hpp"
-#include "../Models/XMLNode.h"
+#include "../Models/XMLElementNode.h"
 #include "../Models/XMLDocument.h"
 #include "../../../Utils/MyString/MyString.h"
 
-class XMLRepository : public Repository<XMLNode>
+class XMLRepository : public Repository<XMLElementNode>
 {
 	XMLDocument _xmlDocument;
 public:
@@ -13,8 +13,8 @@ public:
 	void save();
 	void saveas(const MyString& path);
 
-	void add(const XMLNode& item) override;
-	bool remove(const XMLNode& item) override;
+	void add(const XMLElementNode& item) override;
+	bool remove(const XMLElementNode& item) override;
 	bool remove(const MyString& id);
-	const XMLNode*& find(bool(*pred)(XMLNode)) const override;
+	const XMLElementNode*& find(bool(*pred)(XMLElementNode)) const override;
 };

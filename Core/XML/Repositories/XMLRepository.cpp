@@ -20,11 +20,11 @@ void XMLRepository::saveas(const MyString& path)
 {
 }
 
-void XMLRepository::add(const XMLNode& item)
+void XMLRepository::add(const XMLElementNode& item)
 {
 }
 
-bool XMLRepository::remove(const XMLNode& item)
+bool XMLRepository::remove(const XMLElementNode& item)
 {
     return false;
 }
@@ -34,9 +34,9 @@ bool XMLRepository::remove(const MyString& id)
     return false;
 }
 
-const XMLNode*& XMLRepository::find(bool(*pred)(XMLNode)) const
+const XMLElementNode*& XMLRepository::find(bool(*pred)(XMLElementNode)) const
 {
-    const XMLNode* asd = new XMLNode();
+    const XMLElementNode* asd = new XMLElementNode("");
     return asd;
     // TODO: insert return statement here
 }

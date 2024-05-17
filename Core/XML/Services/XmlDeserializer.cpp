@@ -58,20 +58,19 @@ XMLDocument XmlDeserializer::deserialize()
 	{
 		throw FileError("Unable to open or create file!");
 	}
-	XMLDocument result(new XMLElementNode());
 
-	XMLElementNode* root = result.root();
+	XMLDocument result;
 	bool isRootSet = false;
 
-	XMLElementNode* previousParent = root;
+	XMLElementNode* previousParent = &result.root();
 	State state = State::Initial;
 	MyString currentTagName;
 	MyString currentPlainText;
 
-	XMLElementNode* current = new XMLElementNode();
+	XMLElementNode current;
 	MyStack<MyString> tags;
 	while (!ifs.eof())
-	{
+	{		
 		char c = ifs.get();
 		if (c == '<')
 		{
@@ -92,7 +91,7 @@ XMLDocument XmlDeserializer::deserialize()
 			currentTagName += takeWhile(ifs, [](char c) {return !isWhitespace(c) && !isTerminator(c);}).trim();
 			c = ifs.get();
 
-			current->setParent(previousParent);
+			current.setParent(previousParent);
 			bool isSelfClosing = currentTagName.ends_with("/");
 			if (isSelfClosing)
 			{
@@ -102,7 +101,7 @@ XMLDocument XmlDeserializer::deserialize()
 			{
 				tags.push(currentTagName);
 			}
-			current->setTagName(currentTagName);
+			current.setTagName(currentTagName);
 			currentTagName.clear();
 
 			if (isWhitespace(c))
@@ -116,25 +115,22 @@ XMLDocument XmlDeserializer::deserialize()
 				if (currentTagName.contains(":"))
 				{
 					MyString nsName = currentTagName.split(':')[0];
-					current->assignNamespace(XMLNamespace(nsName, currentTagName.split(':')[1]));
+					current.assignNamespace(XMLNamespace(nsName, currentTagName.split(':')[1]));
 				}
 				if (!isRootSet)
 				{
-					previousParent->setTagName(current->getTagName());
+					previousParent->setTagName(current.getTagName());
 					isRootSet = true;
 				}
 				else
 				{
-					if (!previousParent->children().empty())
-					{
-						previousParent->children().back()->setRightSibling(current);
-					}	
-					previousParent->addChild(current);
+					XMLElementNode* currentDyn = new XMLElementNode(current);
+					previousParent->addChild(currentDyn);
 					if (!isSelfClosing)
 					{
-						previousParent = current;
+						previousParent = currentDyn;
 					}
-					current = new XMLElementNode();
+					current = XMLElementNode();
 				}
 				continue;
 			}
@@ -146,23 +142,20 @@ XMLDocument XmlDeserializer::deserialize()
 				.trimEnd()
 				.split(' ', true)
 				.convertTo<XMLAttribute>([this](const MyString& arg) {return deserializeAttribute(arg);});
-			current->addAttributes(attributes);
+			current.addAttributes(attributes);
 			state = State::EndOfTag;
 			c = ifs.get();
 
-			if (current->getTagName().contains(":"))
+			if (current.getTagName().contains(":"))
 			{
-				MyString nsName = current->getTagName().split(':')[0];
-				current->assignNamespace(XMLNamespace(nsName, current->getTagName().split(':')[1]));
+				MyString nsName = current.getTagName().split(':')[0];
+				current.assignNamespace(XMLNamespace(nsName, current.getTagName().split(':')[1]));
 			}
 
-			if (!previousParent->children().empty())
-			{
-				previousParent->children().back()->setRightSibling(current);
-			}
-			previousParent->addChild(current);		
-			previousParent = current;
-			current = new XMLElementNode();
+			XMLElementNode* currentDyn = new XMLElementNode(current);
+			previousParent->addChild(currentDyn);
+			previousParent = currentDyn;
+			current = XMLElementNode();
 		}
 		else if ((state == State::EndOfTag || state == State::Initial) && !isWhitespace(c) && c != '<' && c != '>')
 		{
@@ -193,7 +186,7 @@ XMLDocument XmlDeserializer::deserialize()
 			currentTagName.clear();
 
 			previousParent = dynamic_cast<XMLElementNode*>(previousParent->parent());
-			current = new XMLElementNode();
+			current = XMLElementNode();
 			state = State::Initial;
 		}
 	}

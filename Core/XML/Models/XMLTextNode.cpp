@@ -1,6 +1,11 @@
 #include "XMLTextNode.h"
 #include <iomanip>
 
+XMLNode* XMLTextNode::clone() const
+{
+	return new XMLTextNode(*this);
+}
+
 XMLTextNode::XMLTextNode(const MyString& textContent, XMLNode* parent) : XMLNode(parent)
 {
 	setTextContent(textContent);

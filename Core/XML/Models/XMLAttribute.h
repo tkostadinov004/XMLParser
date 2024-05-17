@@ -7,7 +7,8 @@ class XMLAttribute
 public:
 	XMLAttribute() = default;
 	XMLAttribute(const MyString& key, const MyString& value);
-	
+	virtual ~XMLAttribute() = default;
+
 	const MyString& getKey() const;
 	const MyString& getValue() const;
 

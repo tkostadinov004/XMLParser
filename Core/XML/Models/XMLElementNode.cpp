@@ -18,7 +18,7 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 		return os << "/>";
 	}
 	os << ">";
-	if (_children.size() == 1 && dynamic_cast<XMLTextNode*>(_children.back()))
+	if (_children.size() == 1)
 	{
 		_children.back()->print(os);
 		os << "</" << tag << ">";
@@ -41,6 +41,11 @@ XMLElementNode::XMLElementNode(const MyString& tagName, XMLElementNode* parent) 
 	setTagName(tagName);
 }
 
+XMLNode* XMLElementNode::clone() const
+{
+	return new XMLElementNode(*this);
+}
+
 const XMLNamespace* XMLElementNode::getNamespace() const
 {
 	return _namespace;
@@ -56,7 +61,7 @@ const MyVector<XMLAttribute>& XMLElementNode::attributes() const
 	return _attributes;
 }
 
-const MyVector<XMLNode*>& XMLElementNode::children() const
+const MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children() const
 {
 	return _children;
 }

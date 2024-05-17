@@ -29,5 +29,5 @@ void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root, GroupVector& gr
 void XMLDocumentWithID::resolveIdConflicts()
 {
 	GroupVector groups;
-	resolveIdConflicts(_root, groups);
+	//resolveIdConflicts(_root, groups);
 }

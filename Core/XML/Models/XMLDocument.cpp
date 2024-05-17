@@ -1,21 +1,21 @@
 #include "XMLDocument.h"
 #include "..\..\..\Utils\MyStack\MyStack.hpp"
 
-XMLDocument::XMLDocument(XMLElementNode* root)
+XMLDocument::XMLDocument(const XMLElementNode& root)
 {
 	this->_root = root;
 }
 
-MyVector<const XMLNode*> XMLDocument::traverse() const
+MyVector< PointerWrapper<XMLNode>> XMLDocument::traverse() const
 {
-	MyStack<const XMLNode*> stack;
-	MyVector<const XMLNode*> preorder;
+	MyStack<PointerWrapper<XMLNode>> stack;
+	MyVector<PointerWrapper<XMLNode>> preorder;
 
-	stack.push(_root);
+	/*stack.push(_root);
 
 	while (!stack.empty()) 
 	{
-		const XMLElementNode* temp = dynamic_cast<const XMLElementNode*>(stack.peek());
+		const XMLElementNode* temp = dynamic_cast<const XMLElementNode*>(stack.peek().get());
 		if (!temp)
 		{
 			preorder.push_back(stack.peek());
@@ -30,17 +30,21 @@ MyVector<const XMLNode*> XMLDocument::traverse() const
 				stack.push(temp->children()[i]);
 			}
 		}	
-	}
+	}*/
 	return preorder;
 }
 
 
-XMLElementNode* XMLDocument::root() const
+XMLElementNode& XMLDocument::root()
+{
+	return _root;
+}
+const XMLElementNode& XMLDocument::root() const
 {
 	return _root;
 }
 
 std::ostream& operator<<(std::ostream& os, const XMLDocument& doc)
 {
-	return doc.root()->print(std::cout);
+	return doc.root().print(std::cout);
 }

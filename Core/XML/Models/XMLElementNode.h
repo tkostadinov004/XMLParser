@@ -4,22 +4,24 @@
 #include "XMLAttribute.h"
 #include "XMLNamespace.h"
 #include "XMLNode.h"
+#include "..\..\..\Utils\PointerWrapper\PointerWrapper.hpp"
 
 class XMLElementNode : public XMLNode
 {
 	const XMLNamespace* _namespace = nullptr;
 	MyString _tagName;
 	MyVector<XMLAttribute> _attributes;
-	MyVector<XMLNode*> _children;
+	MyVector<PointerWrapper<XMLNode>> _children;
 	MyVector<XMLNamespace> _definedNamespaces;
 public:
 	XMLElementNode() = default;
 	explicit XMLElementNode(const MyString& tagName, XMLElementNode* parent = nullptr);
+	virtual XMLNode* clone() const override;
 
 	const XMLNamespace* getNamespace() const;
 	const MyString& getTagName() const;
 	const MyVector<XMLAttribute>& attributes() const;
-	const MyVector<XMLNode*>& children() const;
+	const MyVector<PointerWrapper<XMLNode>>& children() const;
 	const MyVector<XMLNamespace>& definedNamespaces() const;
 	const XMLNamespace* getDefinedNamespaceByName(const MyString& nsName) const;
 
