@@ -30,6 +30,8 @@ public:
 	const char& operator[](int index) const;
 	char& front();
 	char& back();
+	char front() const;
+	char back() const;
 	const char* c_str() const;
 
 	bool empty() const;
@@ -60,6 +62,8 @@ public:
 	MyString trimStart() const;
 	MyString trimEnd() const;
 	MyString substr(size_t pos, size_t length = npos) const;
+	MyString reverse() const;
+	MyString& reverse();
 	MyVector<MyString> split(char delim = ' ', bool removeEmptyEntries = false) const;
 	void swap(MyString& other);
 
@@ -80,6 +84,7 @@ public:
 };
 std::istream& getline(std::istream& is, MyString& str, size_t count, char delim = '\n');
 MyString join(const MyVector<MyString>& str, const MyString& separator = " ");
+MyString toString(int num);
 
 MyString operator+(const MyString& lhs, const MyString& rhs);
 MyString operator+(const MyString& lhs, char c);

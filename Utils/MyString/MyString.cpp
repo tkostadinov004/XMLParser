@@ -243,6 +243,24 @@ char& MyString::back()
 	return _data[_size - 1];
 }
 
+char MyString::front() const
+{
+	if (empty())
+	{
+		throw std::logic_error("String is empty!");
+	}
+	return _data[0];
+}
+
+char MyString::back() const
+{
+	if (empty())
+	{
+		throw std::logic_error("String is empty!");
+	}
+	return _data[_size - 1];
+}
+
 const char* MyString::c_str() const
 {
 	return _data;
@@ -536,6 +554,21 @@ MyString MyString::substr(size_t pos, size_t length) const
 	return MyString(_data + pos, _data + pos + length);
 }
 
+MyString MyString::reverse() const
+{
+	MyString result = *this;
+	return result.reverse();
+}
+
+MyString& MyString::reverse()
+{
+	for (size_t i = 0; i < _size / 2; i++)
+	{
+		std::swap(_data[i], _data[_size - 1 - i]);
+	}
+	return *this;
+}
+
 void MyString::swap(MyString& other)
 {
 	std::swap(this->_data, other._data);
@@ -672,6 +705,32 @@ MyString join(const MyVector<MyString>& str, const MyString& separator)
 		result += str[i] + separator;
 	}
 	result += str.back();
+	return result;
+}
+
+MyString toString(int num)
+{
+	bool isNegative = num < 0;
+	if (isNegative)
+	{
+		num *= -1;
+	}
+	else if (num == 0)
+	{
+		return "0";
+	}
+
+	MyString result;
+	while (num > 0)
+	{
+		result += (num % 10) + '0';
+		num /= 10;
+	}
+	result.reverse();
+	if (isNegative)
+	{
+		result.prepend('-');
+	}
 	return result;
 }
 

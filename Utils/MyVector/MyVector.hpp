@@ -40,12 +40,15 @@ public:
 	const T& operator[](int index) const;
 	T& front();
 	const T& front() const;
+	T front_or_default() const;
 	T& back();
 	const T& back() const;
+	T back_or_default() const;
 
 	bool contains(const T& element) const;
 	bool any(std::function<bool(const T&)> pred) const;
 	int indexOf(const T& element) const;
+	int indexOf(std::function<bool(const T&)> pred) const;
 	bool empty() const;
 	void shrink_to_fit();
 	void clear();
@@ -279,6 +282,12 @@ T& MyVector<T>::front()
 }
 
 template<typename T>
+T MyVector<T>::front_or_default() const
+{
+	return empty() ? T() : _data[0];
+}
+
+template<typename T>
 const T& MyVector<T>::front() const
 {
 	if (empty())
@@ -286,6 +295,12 @@ const T& MyVector<T>::front() const
 		throw std::logic_error("Vector is empty!");
 	}
 	return _data[0];
+}
+
+template<typename T>
+T MyVector<T>::back_or_default() const
+{
+	return empty() ? T() : _data[_size - 1];
 }
 
 template<typename T>
@@ -317,14 +332,7 @@ bool MyVector<T>::contains(const T& element) const
 template<typename T>
 bool MyVector<T>::any(std::function<bool(const T&)> pred) const
 {
-	for (size_t i = 0; i < _size; i++)
-	{
-		if (pred(_data[i]))
-		{
-			return true;
-		}
-	}
-	return false;
+	return indexOf(pred) != -1;
 }
 
 template<typename T>
@@ -333,6 +341,19 @@ int MyVector<T>::indexOf(const T& element) const
 	for (size_t i = 0; i < _size; i++)
 	{
 		if (element == _data[i])
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+template <typename T>
+int MyVector<T>::indexOf(std::function<bool(const T&)> pred) const
+{
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (pred(_data[i]))
 		{
 			return i;
 		}
