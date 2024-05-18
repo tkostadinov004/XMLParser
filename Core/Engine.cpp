@@ -1,6 +1,7 @@
 #include "Engine.h"
 
-static MyVector<MyString> splitCommandLine(const MyString& str) {
+static MyVector<MyString> splitCommandLine(const MyString& str) 
+{
 	MyVector<MyString> result;
 	MyString current;
 	bool isInQuotes = false;
@@ -86,4 +87,5 @@ void Engine::run()
 
 		getline(std::cin, input, 2048);
 	}
+	std::cout << "Exiting the program..." << std::endl;
 }

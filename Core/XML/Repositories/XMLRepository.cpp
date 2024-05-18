@@ -5,7 +5,7 @@
 void XMLRepository::open(const MyString& path)
 {
     XMLDeserializer deserializer(path);
-    _xmlDocument = XMLDocumentWithID(deserializer.deserialize());
+    _xmlDocument = deserializer.deserialize();
 }
 
 void XMLRepository::close()
@@ -16,7 +16,7 @@ void XMLRepository::close()
 void XMLRepository::saveAs(const MyString& path)
 {
     XMLSerializer serializer(path);
-    serializer.serializeToStream(XMLDocument(_xmlDocument.root()));
+    serializer.serializeToStream(_xmlDocument);
 }
 
 void XMLRepository::add(const XMLElementNodeWithID& item)

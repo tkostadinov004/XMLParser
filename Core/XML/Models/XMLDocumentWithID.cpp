@@ -1,87 +1,96 @@
 #include "XMLDocumentWithID.h"
 #include "..\..\..\Utils\MyStack\MyStack.hpp"
+#include "XMLTextNode.h"
+GroupVector XMLDocumentWithID::idGroups;
 
-void XMLDocumentWithID::resolveIdConflicts(XMLElementNode& root, GroupVector& groups)
+static void convertNodeToWithID(XMLNode* node)
 {
-	//for (size_t i = 0; i < root.children().size(); i++)
-	//{
-	//	XMLElementNode* elementChild = dynamic_cast<XMLElementNode*>(root.children()[i].get());
-	//	if (!elementChild) //text node
-	//	{
-	//		continue;
-	//	}
-	//	XMLAttribute* idAttribute = elementChild->_attributes["id"];
-	//	if (idAttribute)
-	//	{
-	//		const MyString& id = idAttribute->getKey();
-	//		if (groups[id] > 0)
-	//		{
-	//			int count = groups[id];
-	//			groups[id]++;
-	//			root._children[i]setId(id + "_" + std::to_string(count));
-	//		}
-	//	}
+	if (XMLElementNode* elementNode = dynamic_cast<XMLElementNode*>(node))
+	{
+		XMLElementNodeWithID* newElementNode = dynamic_cast<XMLElementNodeWithID*>(node);
+		for (int i = 0; i < elementNode->children().size(); i++)
+		{
+			XMLNode*& currentChild = elementNode->children()[i].get();
+			if (auto textNode = dynamic_cast<const XMLTextNode*>(currentChild))
+			{
+				continue;
+			}
+			if (const XMLElementNode* childAsElementNode = dynamic_cast<const XMLElementNode*>(currentChild))
+			{
+				XMLElementNodeWithID* converted = new XMLElementNodeWithID(*childAsElementNode);
+				delete currentChild;
+				currentChild = converted;
+			}
 
-
-	//	if (groups[id] > 1)
-	//	{
-	//		int count = groups[id];
-	//		groups[id]++;
-	//		root->children()[i]->setId(id + "_" + std::to_string(count)); //!!!!!
-	//	}
-	//	else
-	//	{
-	//		groups.add(id);
-	//	}
-
-	//	resolveIdConflicts(root->children()[i], groups);
-	//}
+			convertNodeToWithID(currentChild);
+			//XMLNode* child = new XMLElementNodeWithID(elementNode->getTagName(), "");// convertNodeToWithID(elementNode->children()[i].get());
+			//newElementNode->addChild(child);
+		}
+	}
 }
 
-void XMLDocumentWithID::adaptFrom(XMLElementNodeWithID& previousParent, const XMLDocument& xml)
+void XMLDocumentWithID::setIdToElement(XMLElementNodeWithID* element)
 {
-	_root = XMLElementNodeWithID(xml.root());
-	/*MyStack<PointerWrapper<const XMLNode>> stack;
-
-	stack.push(&xml.root());
-
-	while (!stack.empty())
+	MyString resultId;
+	if (XMLAttribute* idAttribute = element->_attributes["id"])
 	{
-		const XMLElementNode* temp = dynamic_cast<const XMLElementNode*>(stack.peek().get());
-		if (!temp)
+		const MyString& id = idAttribute->getValue();
+		resultId = id;
+		idGroups.add(resultId);
+		if (idGroups[id] > 1)
 		{
-			previousParent.addChild(*stack.peek());
-			stack.pop();
+			resultId += "_" + toString(idGroups[id]++);
 		}
-		else
+		idAttribute->setValue(resultId);
+	}
+	else
+	{
+		resultId = "auto_" + toString(++generated);
+		idGroups.add(resultId);
+		element->addAttribute(XMLAttribute("id", resultId));
+	}
+	
+	element->setId(resultId);
+}
+
+void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root)
+{
+	for (size_t i = 0; i < root->children().size(); i++)
+	{
+		XMLElementNode* elementChild = dynamic_cast<XMLElementNode*>(root->children()[i].get());
+		if (!elementChild) //text node
 		{
-			stack.pop();
-			for (int i = temp->children().size() - 1; i >= 0; i--)
-			{
-				previousParent = *previousParent._children[i];
-				stack.push(temp->_children[i]);
-			}
+			continue;
 		}
-	}*/
+		XMLElementNodeWithID* idChild = dynamic_cast<XMLElementNodeWithID*>(elementChild);
+		if (idChild)
+		{
+			setIdToElement(idChild);
+		}
+
+		resolveIdConflicts(elementChild);
+	}
+}
+
+void XMLDocumentWithID::convertToXID(XMLNode* node)
+{
+
 }
 
 void XMLDocumentWithID::resolveIdConflicts()
 {
-	GroupVector groups;
-	resolveIdConflicts(_root, groups);
+	resolveIdConflicts(_root);
 }
 
 XMLDocumentWithID::XMLDocumentWithID(const XMLDocument& xml)
 {
-	adaptFrom(_root, xml);
-}
-
-const XMLElementNodeWithID& XMLDocumentWithID::root() const
-{
-	return _root;
+	delete _root;
+	_root = new XMLElementNodeWithID(*xml.root());
+	convertNodeToWithID(_root);
+	resolveIdConflicts();
 }
 
 std::ostream& operator<<(std::ostream& os, const XMLDocumentWithID& doc)
 {
-	return doc.root().print(os);
+	return doc.root()->print(os);
 }

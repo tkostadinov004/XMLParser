@@ -62,7 +62,7 @@ XMLDocument XMLDeserializer::deserialize()
 	XMLDocument result;
 	bool isRootSet = false;
 
-	XMLElementNode* previousParent = &result.root();
+	XMLElementNode* previousParent = result.root();
 	State state = State::Initial;
 	MyString currentTagName;
 	MyString currentPlainText;
@@ -168,7 +168,9 @@ XMLDocument XMLDeserializer::deserialize()
 			currentPlainText = currentPlainText.trim();
 			if (!currentPlainText.empty())
 			{
-				previousParent->addChild(new XMLTextNode(currentPlainText));
+				XMLTextNode* resultTextNode = new XMLTextNode(currentPlainText);
+				resultTextNode->setParent(previousParent);
+				previousParent->addChild(resultTextNode);
 				currentPlainText.clear();
 			}
 			state = State::EndOfPlainText;

@@ -133,12 +133,13 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 
 void XMLElementNode::addChild(XMLNode* child)
 {
+	child->setParent(this);
 	this->_children.push_back(child);
 }
 
 void XMLElementNode::addChild(const XMLNode& child)
 {
-	this->_children.push_back(child.clone());
+	addChild(child.clone());
 }
 
 void XMLElementNode::defineNamespace(XMLNamespace& xmlNamespace)

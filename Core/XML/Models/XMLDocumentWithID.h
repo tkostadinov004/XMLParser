@@ -3,15 +3,16 @@
 #include "../../../Utils/GroupVector/GroupVector.h"
 #include "../Models/XMLElementNodeWithID.h"
 
-class XMLDocumentWithID
+class XMLDocumentWithID : public XMLDocument
 {
-	XMLElementNodeWithID _root;
-	void resolveIdConflicts(XMLElementNode& node, GroupVector& groups);
-	void adaptFrom(XMLElementNodeWithID& previousParent, const XMLDocument& xml);
+	int generated = 0;
+	static GroupVector idGroups;
+	void setIdToElement(XMLElementNodeWithID* element);
+	void resolveIdConflicts(XMLElementNode* node);
+	void convertToXID(XMLNode* node);
 public:
 	void resolveIdConflicts();
 	XMLDocumentWithID() = default;
 	XMLDocumentWithID(const XMLDocument& xml);
-	const XMLElementNodeWithID& root() const;
 };
 std::ostream& operator<<(std::ostream& os, const XMLDocumentWithID& doc);

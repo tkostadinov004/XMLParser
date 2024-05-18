@@ -5,12 +5,18 @@
 class XMLDocument
 {
 protected:
-	XMLElementNode _root;
+	XMLElementNode* _root;
+	void copyFrom(const XMLDocument& other);
+	void moveFrom(XMLDocument&& other) noexcept;
+	void free();
 public:
-	virtual ~XMLDocument() = default;
-	XMLDocument() = default;
-	explicit XMLDocument(const XMLElementNode& root);
-	XMLElementNode& root();
-	const XMLElementNode& root() const;
+	XMLDocument();
+	XMLDocument(const XMLDocument& other);
+	XMLDocument(XMLDocument&& other) noexcept;
+	XMLDocument& operator=(const XMLDocument& other);
+	XMLDocument& operator=(XMLDocument&& other);
+	virtual ~XMLDocument();
+	XMLElementNode* root();
+	const XMLElementNode* root() const;
 };
 std::ostream& operator<<(std::ostream& os, const XMLDocument& doc);
