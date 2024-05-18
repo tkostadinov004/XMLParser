@@ -12,4 +12,5 @@ public:
 	void add(const MyString& id);
 	int operator[](const MyString& id) const;
 	int& operator[](const MyString& id);
+	bool contains(const MyString& id) const;
 };

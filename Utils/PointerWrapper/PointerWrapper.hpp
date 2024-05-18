@@ -19,7 +19,7 @@ public:
 	T* operator->();
 	const T* operator->() const;
 	const T* get() const;
-	T* get();
+	T*& get();
 };
 
 template<typename T>
@@ -117,7 +117,7 @@ const T* PointerWrapper<T>::get() const
 	return _ptr;
 }
 template<typename T>
-T* PointerWrapper<T>::get()
+T*& PointerWrapper<T>::get()
 {
 	return _ptr;
 }
