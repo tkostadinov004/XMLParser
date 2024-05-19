@@ -14,4 +14,6 @@ public:
 
 	void setKey(const MyString& key);
 	void setValue(const MyString& value);
+
+	MyString toString() const;
 };

@@ -4,6 +4,11 @@ XMLElementNodeWithID::XMLElementNodeWithID(const MyString& tagName, const MyStri
 {
 }
 
+XMLNode* XMLElementNodeWithID::clone() const
+{
+	return new XMLElementNodeWithID(*this);
+}
+
 XMLElementNodeWithID::XMLElementNodeWithID(const XMLElementNode& node) : XMLElementNode(node)
 {
 	

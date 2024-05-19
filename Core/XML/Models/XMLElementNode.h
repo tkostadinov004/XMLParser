@@ -32,6 +32,8 @@ public:
 	void assignNamespace(const XMLNamespace& ns);
 	void addAttribute(const XMLAttribute& attribute);
 	void addAttributes(const MyVector<XMLAttribute>& attributes);
+	void changeAttribute(const MyString& attributeName, const MyString& newValue);
+	bool deleteAttribute(const MyString& attributeName);
 	void addChild(XMLNode* child);
 	void addChild(const XMLNode& child);
 	void defineNamespace(XMLNamespace& xmlNamespace);

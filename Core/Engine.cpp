@@ -34,38 +34,82 @@ static MyVector<MyString> splitCommandLine(const MyString& str)
 
 	return result;
 }
-MyString Engine::handleCommandLine(const MyVector<MyString>& commandLine)
+void Engine::handleCommandLine(const MyVector<MyString>& commandLine)
 {
 	if (commandLine.empty())
 	{
-		return MyString();
+		return;
 	}
 
-	MyString result;
 	const MyString& command = commandLine.front();
 	if (command == "open")
 	{
 		const MyString& path = commandLine[1];
-		result = _xmlController.openFile(path);
+
+		_xmlController.openFile(path);
 	}
 	else if (command == "close")
 	{
-		result = _xmlController.closeFile();
+		_xmlController.closeFile();
 	}
 	else if (command == "save")
 	{
-		result = _xmlController.save();
+		_xmlController.save();
 	}
 	else if (command == "saveas")
 	{
 		const MyString& path = commandLine[1];
-		result = _xmlController.saveAs(path);
+
+		_xmlController.saveAs(path);
 	}
 	else if (command == "help")
 	{
-		result = _xmlController.help();
+		_xmlController.help();
 	}
-	return result;
+	else if (command == "print")
+	{
+		_xmlController.print();
+	}
+	else if (command == "select")
+	{
+		const MyString& nodeId = commandLine[1];
+		const MyString& attributeName = commandLine[2];
+
+		_xmlController.selectAttribute(nodeId, attributeName);
+	}
+	else if (command == "set")
+	{
+		const MyString& nodeId = commandLine[1];
+		const MyString& attributeName = commandLine[2];
+		const MyString& newValue = commandLine[3];
+
+		_xmlController.changeAttributeValue(nodeId, attributeName, newValue);
+	}
+	else if (command == "children")
+	{
+		const MyString& nodeId = commandLine[1];
+
+		_xmlController.printChildrenOfNode(nodeId);
+	}
+	else if (command == "text")
+	{
+		const MyString& nodeId = commandLine[1];
+
+		_xmlController.printInnerText(nodeId);
+	}
+	else if (command == "delete")
+	{
+		const MyString& nodeId = commandLine[1];
+		const MyString& attributeName = commandLine[2];
+
+		_xmlController.deleteAttribute(nodeId, attributeName);
+	}
+	else if (command == "newchild")
+	{
+		const MyString& nodeId = commandLine[1];
+
+		_xmlController.addChild(nodeId);
+	}
 }
 
 void Engine::run()
@@ -73,7 +117,6 @@ void Engine::run()
 	MyString input;
 	getline(std::cin, input, 2048);
 
-	MyString result;
 	while (input != "exit")
 	{
 		while (input.empty())
@@ -82,8 +125,7 @@ void Engine::run()
 		}
 		MyVector<MyString> commandLine = splitCommandLine(input);
 
-		result = handleCommandLine(commandLine);
-		std::cout << result << std::endl;
+		handleCommandLine(commandLine);
 
 		getline(std::cin, input, 2048);
 	}

@@ -1,6 +1,8 @@
+#include <sstream>
 #include "XMLRepository.h"
 #include "..\Services\XMLDeserializer.h"
 #include "..\Services\XMLSerializer.h"
+#include "..\..\..\Utils\MyStack\MyStack.hpp"
 
 void XMLRepository::open(const MyString& path)
 {
@@ -33,9 +35,62 @@ bool XMLRepository::remove(const MyString& id)
     return false;
 }
 
-const XMLElementNodeWithID*& XMLRepository::find(bool(*pred)(XMLElementNodeWithID)) const
+MyString XMLRepository::getContents() const
 {
-    const XMLElementNodeWithID* asd = new XMLElementNodeWithID();
-    return asd;
-    // TODO: insert return statement here
+    std::stringstream ss;
+    ss << _xmlDocument;
+    return MyString(ss.str().c_str());
+}
+
+const XMLElementNodeWithID* XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred) const
+{
+    MyStack<const XMLNode*> stack;
+
+    stack.push(_xmlDocument.root());
+    while (!stack.empty())
+    {
+        const XMLNode* current = stack.pop();
+        if (const XMLElementNodeWithID* nodeWithChildren = dynamic_cast<const XMLElementNodeWithID*>(current))
+        {
+            if (pred(nodeWithChildren))
+            {
+                return nodeWithChildren;
+            }
+
+            for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)
+            {
+                stack.push(nodeWithChildren->children()[i].get());
+            }
+        }
+    }
+    return nullptr;
+}
+
+XMLElementNodeWithID* XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred)
+{
+    MyStack<XMLNode*> stack;
+
+    stack.push(_xmlDocument.root());
+    while (!stack.empty())
+    {
+        XMLNode* current = stack.pop();
+        if (XMLElementNodeWithID* nodeWithChildren = dynamic_cast<XMLElementNodeWithID*>(current))
+        {
+            if (pred(nodeWithChildren))
+            {
+                return nodeWithChildren;
+            }
+
+            for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)
+            {
+                stack.push(nodeWithChildren->children()[i].get());
+            }
+        }
+    }
+    return nullptr;
+}
+
+void XMLRepository::resolveIdConflicts()
+{
+    _xmlDocument.resolveIdConflicts();
 }

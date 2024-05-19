@@ -25,3 +25,8 @@ void XMLAttribute::setValue(const MyString& value)
 {
     this->_value = value;
 }
+
+MyString XMLAttribute::toString() const
+{
+    return MyString(getKey() + "=\"" + getValue() + "\"");
+}

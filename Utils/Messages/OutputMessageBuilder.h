@@ -1,6 +1,6 @@
 #pragma once
 #include "..\MyString\MyString.h"
-struct OutputMessageBuilders
+struct OutputMessageBuilder
 {
 	static MyString SUCCESSFULLY_OPENED_FILE(const MyString& filename)
 	{

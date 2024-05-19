@@ -28,7 +28,7 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	{
 		os << std::endl;
 		indentationLevel++;
-		
+
 		_children[i]->print(os, indentationLevel);
 		indentationLevel--;
 	}
@@ -129,6 +129,19 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 		}
 		addAttribute(attributes[i]);
 	}
+}
+
+void XMLElementNode::changeAttribute(const MyString& attributeName, const MyString& newValue)
+{
+	if (XMLAttribute* attribute = _attributes[attributeName])
+	{
+		attribute->setValue(newValue);
+	}
+}
+
+bool XMLElementNode::deleteAttribute(const MyString& attributeName)
+{
+	return _attributes.erase([attributeName](const XMLAttribute& attribute) {return attribute.getKey() == attributeName;});
 }
 
 void XMLElementNode::addChild(XMLNode* child)

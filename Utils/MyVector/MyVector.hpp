@@ -58,6 +58,7 @@ public:
 	void insert_range(int index, MyVector&& vector);
 	void erase(int index);
 	void erase(int start, int end);
+	bool erase(std::function<bool(const T&)> pred);
 	void push_back(const T& element);
 	void push_back(T&& element);
 	void append(const T& element, size_t count = 1);
@@ -468,6 +469,21 @@ void MyVector<T>::erase(int start, int end)
 		end = _size - 1;
 	}
 	shiftLeft(start, end - start + 1);
+}
+
+template<typename T>
+bool MyVector<T>::erase(std::function<bool(const T&)> pred)
+{
+	bool deleted = false;
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (pred(_data[i]))
+		{
+			erase(i);
+			deleted = true;
+		}
+	}
+	return deleted;
 }
 
 template<typename T>

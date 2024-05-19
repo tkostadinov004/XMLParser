@@ -1,7 +1,7 @@
 #pragma once
 #include "XML/Repositories/XMLRepository.h"
-#include "../Utils/Messages/ErrorMessages.h"
-#include "../Utils/Messages/OutputMessageBuilders.h"
+#include "../Utils/Messages/ErrorMessageBuilder.h"
+#include "../Utils/Messages/OutputMessageBuilder.h"
 
 class XMLController
 {
@@ -9,9 +9,16 @@ class XMLController
 	MyString _currentFilePath;
 	MyString _currentFileName;
 public:
-	MyString openFile(const MyString& path);
-	MyString closeFile();
-	MyString save();
-	MyString saveAs(const MyString& path);
-	MyString help();
+	void openFile(const MyString& path);
+	void closeFile();
+	void save();
+	void saveAs(const MyString& path);
+	void help() const;
+	void print() const;
+	void selectAttribute(const MyString& nodeId, const MyString& attributeName) const;
+	void changeAttributeValue(const MyString& nodeId, const MyString& attributeName, const MyString& newValue);
+	void printChildrenOfNode(const MyString& nodeId) const;
+	void printInnerText(const MyString& nodeId) const;
+	void deleteAttribute(const MyString& nodeId, const MyString& attributeName);
+	void addChild(const MyString& nodeId);
 };

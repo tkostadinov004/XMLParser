@@ -9,7 +9,7 @@ class Engine
 	XMLController _xmlController;
 	XPathController _xPathController;
 
-	MyString handleCommandLine(const MyVector<MyString>& commandLine);
+	void handleCommandLine(const MyVector<MyString>& commandLine);
 public:
 	void run();
 };
