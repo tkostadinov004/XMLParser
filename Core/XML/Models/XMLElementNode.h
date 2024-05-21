@@ -25,6 +25,8 @@ public:
 	const XMLAttributeCollection& attributes() const;
 	const MyVector<PointerWrapper<XMLNode>>& children() const;
 	MyVector<PointerWrapper<XMLNode>>& children();
+	MyVector<const XMLNode*> getDescendants() const;
+	MyVector<const XMLNode*> getAncestors() const;
 	const MyVector<XMLNamespace>& definedNamespaces() const;
 	const XMLNamespace* getDefinedNamespaceByName(const MyString& nsName) const;
 
@@ -34,6 +36,7 @@ public:
 	void addAttributes(const MyVector<XMLAttribute>& attributes);
 	void changeAttribute(const MyString& attributeName, const MyString& newValue);
 	bool deleteAttribute(const MyString& attributeName);
+	bool hasTextChild(const MyString& content) const;
 	void addChild(XMLNode* child);
 	void addChild(const XMLNode& child);
 	void defineNamespace(XMLNamespace& xmlNamespace);

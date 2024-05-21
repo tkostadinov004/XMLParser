@@ -22,4 +22,5 @@ public:
 	const XMLElementNodeWithID* find(std::function<bool(const XMLElementNodeWithID*)> pred) const;
 	XMLElementNodeWithID* find(std::function<bool(const XMLElementNodeWithID*)> pred);
 	void resolveIdConflicts();
+	MyVector<MyString> handleXPath(const MyString& query) const;
 };

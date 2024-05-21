@@ -30,6 +30,50 @@ static MyString takeWhile(std::istream& is, bool(*pred)(char))
 	}
 	return result;
 }
+static MyString readAttributes(std::istream& is)
+{
+	MyString result;
+	is.seekg(-1, std::ios::cur);
+	bool isInQuotes = false;
+	while ((!isTerminator(is.peek()) || isInQuotes) && !is.eof())
+	{
+		if (is.peek() == '\"')
+		{
+			isInQuotes = !isInQuotes;
+		}
+		result += is.get();
+	}
+	return result;
+}
+static MyVector<MyString> splitAndIgnore(const MyString& str, char delim = ' ', bool removeEmptyEntries = false)
+{
+	MyVector<MyString> splitted;
+	bool isInQuotes = false;
+
+	MyString temp;
+	for (size_t i = 0; i < str.length(); i++)
+	{
+		if (str[i] == delim && !isInQuotes)
+		{
+			if (removeEmptyEntries && temp.empty())
+			{
+				continue;
+			}
+			splitted.push_back(temp);
+			temp.clear();
+		}
+		else if (str[i] == '\"')
+		{
+			isInQuotes = !isInQuotes;
+		}
+		else
+		{
+			temp.append(str[i]);
+		}
+	}
+	splitted.push_back(temp);
+	return splitted;
+}
 
 XMLAttribute XMLDeserializer::deserializeAttribute(const MyString& arg)
 {
@@ -70,7 +114,7 @@ XMLDocument XMLDeserializer::deserialize()
 	XMLElementNode current;
 	MyStack<MyString> tags;
 	while (!ifs.eof())
-	{		
+	{
 		char c = ifs.get();
 		if (c == '<')
 		{
@@ -91,11 +135,10 @@ XMLDocument XMLDeserializer::deserialize()
 			currentTagName += takeWhile(ifs, [](char c) {return !isWhitespace(c) && !isTerminator(c);}).trim();
 			c = ifs.get();
 
-			current.setParent(previousParent);
 			bool isSelfClosing = currentTagName.ends_with("/");
 			if (isSelfClosing)
 			{
-				currentTagName = currentTagName.substr(0, currentTagName.length() - 1);	
+				currentTagName = currentTagName.substr(0, currentTagName.length() - 1);
 			}
 			else
 			{
@@ -125,6 +168,7 @@ XMLDocument XMLDeserializer::deserialize()
 				else
 				{
 					XMLElementNode* currentDyn = new XMLElementNode(current);
+					currentDyn->setParent(previousParent);
 					previousParent->addChild(currentDyn);
 					if (!isSelfClosing)
 					{
@@ -137,10 +181,8 @@ XMLDocument XMLDeserializer::deserialize()
 		}
 		else if (state == State::CurrentlyReadingAttributes)
 		{
-			MyVector<XMLAttribute> attributes =
-				takeWhile(ifs, [](char c) {return !isTerminator(c);})
-				.trimEnd()
-				.split(' ', true)
+			MyVector<XMLAttribute> attributes = splitAndIgnore(readAttributes(ifs)
+				.trimEnd())
 				.convertTo<XMLAttribute>([this](const MyString& arg) {return deserializeAttribute(arg);});
 			current.addAttributes(attributes);
 			state = State::EndOfTag;
@@ -153,6 +195,7 @@ XMLDocument XMLDeserializer::deserialize()
 			}
 
 			XMLElementNode* currentDyn = new XMLElementNode(current);
+			currentDyn->setParent(previousParent);
 			previousParent->addChild(currentDyn);
 			previousParent = currentDyn;
 			current = XMLElementNode();
@@ -193,7 +236,7 @@ XMLDocument XMLDeserializer::deserialize()
 			state = State::Initial;
 		}
 	}
-
+	auto a = result.root()->children()[2];
 	if (!tags.empty())
 	{
 		MyString unclosedTags = join(tags.convertTo<MyString>([](const MyString& tag) {return tag;}), ", ");

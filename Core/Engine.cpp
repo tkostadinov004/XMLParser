@@ -110,6 +110,12 @@ void Engine::handleCommandLine(const MyVector<MyString>& commandLine)
 
 		_xmlController.addChild(nodeId);
 	}
+	else if (command == "xpath")
+	{
+		//MyString query = join(commandLine.)
+		MyString query = commandLine[1];
+		_xmlController.handleXPath(query);
+	}
 }
 
 void Engine::run()

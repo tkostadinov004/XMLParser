@@ -3,6 +3,7 @@
 #include "..\Services\XMLDeserializer.h"
 #include "..\Services\XMLSerializer.h"
 #include "..\..\..\Utils\MyStack\MyStack.hpp"
+#include "..\..\XPath\Services\XPathQuery.h"
 
 void XMLRepository::open(const MyString& path)
 {
@@ -93,4 +94,10 @@ XMLElementNodeWithID* XMLRepository::find(std::function<bool(const XMLElementNod
 void XMLRepository::resolveIdConflicts()
 {
     _xmlDocument.resolveIdConflicts();
+}
+
+MyVector<MyString> XMLRepository::handleXPath(const MyString& query) const
+{
+    XPathQuery xPath;
+    return xPath.evaluate(_xmlDocument.root(), query);
 }

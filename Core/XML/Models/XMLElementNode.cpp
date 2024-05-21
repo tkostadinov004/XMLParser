@@ -2,6 +2,7 @@
 #include "XMLDocument.h"
 #include <iomanip>
 #include "XMLTextNode.h"
+#include "..\..\..\Utils\MyStack\MyStack.hpp"
 
 std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 {
@@ -69,6 +70,41 @@ const MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children() const
 MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children()
 {
 	return _children;
+}
+
+MyVector<const XMLNode*> XMLElementNode::getDescendants() const
+{
+	MyVector<const XMLNode*> result;
+	MyStack<const XMLNode*> stack;
+	stack.push(this);
+	while (!stack.empty())
+	{
+		const XMLNode* popped = stack.pop();
+		if (popped != this)
+		{
+			result.push_back(popped);
+		}
+		if (const XMLElementNode* parent = dynamic_cast<const XMLElementNode*>(popped))
+		{
+			for (size_t i = 0; i < parent->children().size(); i++)
+			{
+				stack.push(parent->children()[i].get());
+			}
+		}
+	}
+	return result;
+}
+
+MyVector<const XMLNode*> XMLElementNode::getAncestors() const
+{
+	MyVector<const XMLNode*> result;
+	const XMLNode* parent = this->parent();
+	while (parent)
+	{
+		result.push_back(parent);
+		parent = parent->parent();
+	}
+	return result;
 }
 
 const MyVector<XMLNamespace>& XMLElementNode::definedNamespaces() const
@@ -142,6 +178,21 @@ void XMLElementNode::changeAttribute(const MyString& attributeName, const MyStri
 bool XMLElementNode::deleteAttribute(const MyString& attributeName)
 {
 	return _attributes.erase([attributeName](const XMLAttribute& attribute) {return attribute.getKey() == attributeName;});
+}
+
+bool XMLElementNode::hasTextChild(const MyString& content) const
+{
+	for (size_t i = 0; i < _children.size(); i++)
+	{
+		if (const XMLTextNode* textNode = dynamic_cast<const XMLTextNode*>(_children[i].get()))
+		{
+			if (textNode->textContent() == content)
+			{
+				return true;
+			}
+		}
+	}
+	return false;
 }
 
 void XMLElementNode::addChild(XMLNode* child)

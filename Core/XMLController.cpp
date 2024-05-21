@@ -203,3 +203,8 @@ void XMLController::addChild(const MyString& nodeId)
 	selectedNode->addChild(XMLElementNodeWithID());
 	_repository.resolveIdConflicts();
 }
+
+void XMLController::handleXPath(const MyString& query) const
+{
+	std::cout << "[" << join(_repository.handleXPath(query), ", ") << "]" << std::endl;
+}
