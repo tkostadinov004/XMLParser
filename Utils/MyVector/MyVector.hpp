@@ -49,6 +49,8 @@ public:
 	bool any(std::function<bool(const T&)> pred) const;
 	int indexOf(const T& element) const;
 	int indexOf(std::function<bool(const T&)> pred) const;
+	size_t count(std::function<bool(const T&)> pred) const;
+	MyVector<T> filter(std::function<bool(const T&)> pred) const;
 	bool empty() const;
 	void shrink_to_fit();
 	void clear();
@@ -336,6 +338,20 @@ bool MyVector<T>::any(std::function<bool(const T&)> pred) const
 	return indexOf(pred) != -1;
 }
 
+template <typename T>
+MyVector<T> MyVector<T>::filter(std::function<bool(const T&)> pred) const
+{
+	MyVector<T> result;
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (pred(_data[i]))
+		{
+			result.push_back(_data[i]);
+		}
+	}
+	return result;
+}
+
 template<typename T>
 int MyVector<T>::indexOf(const T& element) const
 {
@@ -360,6 +376,20 @@ int MyVector<T>::indexOf(std::function<bool(const T&)> pred) const
 		}
 	}
 	return -1;
+}
+
+template<typename T>
+size_t MyVector<T>::count(std::function<bool(const T&)> pred) const
+{
+	size_t count = 0;
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (pred(_data[i]))
+		{
+			count++;
+		}
+	}
+	return count;
 }
 
 template<typename T>

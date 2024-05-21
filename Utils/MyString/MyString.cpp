@@ -669,7 +669,6 @@ std::istream& getline(std::istream& is, MyString& str, size_t count, char delim)
 MyVector<MyString> MyString::split(char delim, bool removeEmptyEntries) const
 {
 	MyVector<MyString> splitted;
-	int index = 0;
 
 	MyString temp;
 	for (size_t i = 0; i < _size; i++)
@@ -689,6 +688,31 @@ MyVector<MyString> MyString::split(char delim, bool removeEmptyEntries) const
 		}
 	}
 	splitted.push_back(temp);
+	return splitted;
+}
+
+MyVector<MyString> MyString::split(const MyString& delim, bool removeEmptyEntries) const
+{
+	MyVector<MyString> splitted;
+	MyString temp;
+
+	int ssIndex = find(delim, 0);
+	if (ssIndex == -1)
+	{
+		splitted.push_back(*this);
+		return splitted;
+	}
+
+	for (size_t i = 0; i < _size; i++)
+	{
+		if (ssIndex != -1)
+		{
+			splitted.push_back(substr(i, ssIndex - i));
+		}
+		i = ssIndex + delim._size;
+		ssIndex = find(delim, 0);
+	}
+	splitted.push_back(substr(ssIndex));
 	return splitted;
 }
 

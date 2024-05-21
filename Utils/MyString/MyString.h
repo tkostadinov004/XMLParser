@@ -65,6 +65,7 @@ public:
 	MyString reverse() const;
 	MyString& reverse();
 	MyVector<MyString> split(char delim = ' ', bool removeEmptyEntries = false) const;
+	MyVector<MyString> split(const MyString& delim = " ", bool removeEmptyEntries = false) const;
 	void swap(MyString& other);
 
 	int find(const char* pattern, size_t fromPosition = 0) const;
