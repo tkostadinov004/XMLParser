@@ -1,7 +1,7 @@
 #include "XMLElementNodeWithID.h"
 #include "XMLTextNode.h"
 
-XMLElementNodeWithID::XMLElementNodeWithID(const MyString& tagName, const MyString& id, XMLElementNodeWithID* parent) : XMLElementNode(tagName, parent)
+XMLElementNodeWithID::XMLElementNodeWithID(const MyString& tagName, const MyString& id) : XMLElementNode(tagName)
 {
 }
 

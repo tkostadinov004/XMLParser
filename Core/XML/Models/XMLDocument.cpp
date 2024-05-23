@@ -1,16 +1,16 @@
 #include "XMLDocument.h"
 
-XMLDocument::XMLDocument(const MySharedPtr<XMLElementNode>& root)
+XMLDocument::XMLDocument(MySharedPtr<XMLElementNode> root)
 {
 	_root = root;
 }
 
-MySharedPtr<XMLElementNode>& XMLDocument::root()
+MySharedPtr<XMLElementNode> XMLDocument::root()
 {
 	return _root;
 }
 
-const MySharedPtr<XMLElementNode>& XMLDocument::root() const
+const MySharedPtr<XMLElementNode> XMLDocument::root() const
 {
 	return _root;
 }

@@ -1,21 +1,21 @@
 #include "XMLNode.h"
 
-XMLNode::XMLNode(XMLNode* parent)
-{
-	setParent(parent);
-}
+//XMLNode::XMLNode(MyWeakPtr<XMLNode> parent)
+//{
+//	setParent(parent);
+//}
 
-XMLNode* XMLNode::parent()
-{
-	return _parent;
-}
-
-const XMLNode* XMLNode::parent() const
+MyWeakPtr<XMLNode> XMLNode::parent()
 {
 	return _parent;
 }
 
-void XMLNode::setParent(XMLNode* node)
+const MyWeakPtr<XMLNode> XMLNode::parent() const
+{
+	return _parent;
+}
+
+void XMLNode::setParent(MyWeakPtr<XMLNode> node)
 {
 	this->_parent = node;
 }

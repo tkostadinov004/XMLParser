@@ -106,7 +106,7 @@ XMLDocument XMLDeserializer::deserialize()
 	bool isRootSet = false;
 
 	MySharedPtr<XMLElementNode> root = new XMLElementNode();
-	XMLElementNode* previousParent = root.get();
+	MyWeakPtr<XMLElementNode> previousParent = root;
 	
 	State state = State::Initial;
 	MyString currentTagName;
@@ -173,7 +173,7 @@ XMLDocument XMLDeserializer::deserialize()
 					previousParent->addChild(currentDyn);
 					if (!isSelfClosing)
 					{
-						previousParent = currentDyn.get();
+						previousParent = currentDyn;
 					}
 					current = XMLElementNode();
 				}
@@ -198,7 +198,7 @@ XMLDocument XMLDeserializer::deserialize()
 			MySharedPtr<XMLElementNode> currentDyn = new XMLElementNode(current);
 			currentDyn->setParent(previousParent);
 			previousParent->addChild(currentDyn);
-			previousParent = currentDyn.get();
+			previousParent = currentDyn;
 			current = XMLElementNode();
 		}
 		else if ((state == State::EndOfTag || state == State::Initial) && !isWhitespace(c) && c != '<' && c != '>')
@@ -232,7 +232,7 @@ XMLDocument XMLDeserializer::deserialize()
 			tags.pop();
 			currentTagName.clear();
 
-			previousParent = dynamic_cast<XMLElementNode*>(previousParent->parent());
+			previousParent = previousParent->parent();
 			current = XMLElementNode();
 			state = State::Initial;
 		}

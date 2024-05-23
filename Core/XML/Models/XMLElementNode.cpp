@@ -37,7 +37,7 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	return os;
 }
 
-XMLElementNode::XMLElementNode(const MyString& tagName, XMLElementNode* parent) : XMLNode(parent)
+XMLElementNode::XMLElementNode(const MyString& tagName)
 {
 	setTagName(tagName);
 }
@@ -47,7 +47,7 @@ MySharedPtr<XMLNode> XMLElementNode::clone() const
 	return new XMLElementNode(*this);
 }
 
-const MySharedPtr<XMLNamespace>& XMLElementNode::getNamespace() const
+MySharedPtr<XMLNamespace> XMLElementNode::getNamespace() const
 {
 	return _namespace;
 }
@@ -95,14 +95,14 @@ MyVector<MySharedPtr<const XMLNode>> XMLElementNode::getDescendants() const
 	return result;
 }
 
-MyVector<const XMLElementNode*> XMLElementNode::getAncestors() const
+MyVector<MyWeakPtr<XMLElementNode>> XMLElementNode::getAncestors() const
 {
-	MyVector<const XMLElementNode*> result;
-	const XMLElementNode* parent = dynamic_cast<const XMLElementNode*>(this->parent());
+	MyVector<MyWeakPtr<XMLElementNode>> result;
+	MyWeakPtr<XMLElementNode> parent = this->parent();
 	while (parent)
 	{
 		result.push_back(parent);
-		parent = dynamic_cast<const XMLElementNode*>(this->parent());
+		parent = parent->parent();
 	}
 	return result;
 }
@@ -112,7 +112,7 @@ const MyVector<MySharedPtr<XMLNamespace>>& XMLElementNode::definedNamespaces() c
 	return _definedNamespaces;
 }
 
-const MySharedPtr<XMLNamespace>& XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
+MySharedPtr<XMLNamespace> XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
 {
 	for (size_t i = 0; i < _definedNamespaces.size(); i++)
 	{
@@ -122,7 +122,7 @@ const MySharedPtr<XMLNamespace>& XMLElementNode::getDefinedNamespaceByName(const
 		}
 	}
 
-	const XMLElementNode* ptr = dynamic_cast<const XMLElementNode*>(this->parent());
+	MyWeakPtr<XMLElementNode> ptr = this->parent();
 	if (ptr)
 	{
 		ptr->getDefinedNamespaceByName(nsName);
@@ -195,7 +195,7 @@ bool XMLElementNode::hasTextChild(const MyString& content) const
 	return false;
 }
 
-void XMLElementNode::addChild(const MySharedPtr<XMLNode>& child)
+void XMLElementNode::addChild(MySharedPtr<XMLNode> child)
 {
 	this->_children.push_back(child);
 }

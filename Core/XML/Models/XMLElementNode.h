@@ -17,18 +17,18 @@ protected:
 	MyVector<MySharedPtr<XMLNamespace>> _definedNamespaces;
 public:
 	XMLElementNode() = default;
-	explicit XMLElementNode(const MyString& tagName, XMLElementNode* parent = nullptr);
+	explicit XMLElementNode(const MyString& tagName);
 	virtual MySharedPtr<XMLNode> clone() const override;
 
-	const MySharedPtr<XMLNamespace>& getNamespace() const;
+	MySharedPtr<XMLNamespace> getNamespace() const;
 	const MyString& getTagName() const;
 	const XMLAttributeCollection& attributes() const;
 	const MyVector<MySharedPtr<XMLNode>>& children() const;
 	MyVector<MySharedPtr<XMLNode>>& children();
 	MyVector<MySharedPtr<const XMLNode>> getDescendants() const;
-	MyVector<const XMLElementNode*> getAncestors() const;
+	MyVector<MyWeakPtr<XMLElementNode>> getAncestors() const;
 	const MyVector<MySharedPtr<XMLNamespace>>& definedNamespaces() const;
-	const MySharedPtr<XMLNamespace>& getDefinedNamespaceByName(const MyString& nsName) const;
+	MySharedPtr<XMLNamespace> getDefinedNamespaceByName(const MyString& nsName) const;
 
 	void setTagName(const MyString& tagName);
 	void assignNamespace(const XMLNamespace& ns);
@@ -37,7 +37,7 @@ public:
 	void changeAttribute(const MyString& attributeName, const MyString& newValue);
 	bool deleteAttribute(const MyString& attributeName);
 	bool hasTextChild(const MyString& content) const;
-	void addChild(const MySharedPtr<XMLNode>& child);
+	void addChild(MySharedPtr<XMLNode> child);
 	void addChild(const XMLNode& child);
 	//void defineNamespace(XMLNamespace& xmlNamespace);
 

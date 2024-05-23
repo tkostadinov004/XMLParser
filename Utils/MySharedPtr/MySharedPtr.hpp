@@ -1,10 +1,13 @@
 #pragma once
 #include <iostream>
-#include "ControlBlock.hpp"
+#include "Counter.h"
 template <typename T>
 class MySharedPtr
 {
-	ControlBlock<T>* _controlBlock;
+	template <typename T> friend class MyWeakPtr;
+
+	T* _ptr = nullptr;
+	Counter* _refCounter = nullptr;
 	void copyFrom(const MySharedPtr& other);
 	void free();
 public:
@@ -27,26 +30,42 @@ public:
 template<typename T>
 void MySharedPtr<T>::copyFrom(const MySharedPtr& other)
 {
-	_controlBlock = other._controlBlock;
-	if (_controlBlock)
+	_ptr = other._ptr;
+	_refCounter = other._refCounter;
+	if (_refCounter)
 	{
-		_controlBlock->addReference();
+		_refCounter->addSharedPointer();
 	}
 }
 
 template<typename T>
 void MySharedPtr<T>::free()
 {
-	if (_controlBlock && _controlBlock->release() == 0)
+	if (!_ptr && !_refCounter)
 	{
-		delete _controlBlock;
-		_controlBlock = nullptr;
+		return;
+	}
+
+	_refCounter->removeSharedPointer();
+	if (_refCounter->getSharedCount() == 0)
+	{
+		delete _ptr;
+	}
+	if (_refCounter->getWeakCount() == 0)
+	{
+		delete _refCounter;
 	}
 }
 
 template<typename T>
-MySharedPtr<T>::MySharedPtr(T* ptr) : _controlBlock(ptr ? new ControlBlock<T>(ptr) : nullptr)
-{}
+MySharedPtr<T>::MySharedPtr(T* ptr) : _ptr(ptr)
+{
+	if (_ptr)
+	{
+		_refCounter = new Counter();
+		_refCounter->addSharedPointer();
+	}
+}
 
 template<typename T>
 MySharedPtr<T>::~MySharedPtr()
@@ -63,11 +82,12 @@ MySharedPtr<T>::MySharedPtr(const MySharedPtr& other)
 template<typename T>
 template<typename U>
 MySharedPtr<T>::MySharedPtr(const MySharedPtr<U>& other)
-	: _controlBlock(reinterpret_cast<ControlBlock<T>*>(other._controlBlock))
 {
-	if (_controlBlock)
+	_ptr = reinterpret_cast<T*>(other._ptr);
+	_refCounter = other._refCounter;
+	if (_refCounter)
 	{
-		_controlBlock->addReference();
+		_refCounter->addSharedPointer();
 	}
 }
 
@@ -85,7 +105,7 @@ MySharedPtr<T>& MySharedPtr<T>::operator=(const MySharedPtr& other)
 template<typename T>
 T* MySharedPtr<T>::get() const
 {
-	return _controlBlock ? _controlBlock->getPtr() : nullptr;
+	return _ptr;
 }
 
 template<typename T>
@@ -103,11 +123,10 @@ T* MySharedPtr<T>::operator->() const
 template<typename T>
 int MySharedPtr<T>::use_count() const
 {
-	return _controlBlock ? _controlBlock->getRefCount() : 0;
+	return _refCounter->getSharedCount();
 }
-
 template<typename T>
 MySharedPtr<T>::operator bool() const
 {
-	return _controlBlock != nullptr;
+	return _ptr != nullptr;
 }

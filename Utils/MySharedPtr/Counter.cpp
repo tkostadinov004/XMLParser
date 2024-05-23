@@ -5,17 +5,38 @@ void Counter::reset()
     _useCount = 0;
 }
 
-unsigned Counter::getCount() const
+unsigned Counter::getSharedCount() const
 {
     return _useCount;
 }
 
-void Counter::addPointer()
+unsigned Counter::getWeakCount() const
 {
-    _useCount++;
+    return _weakCount;
 }
 
-void Counter::removePointer()
+void Counter::addSharedPointer()
 {
-    _useCount--;
+    if (++_useCount == 1)
+    {
+        _weakCount++;
+    }
+}
+
+void Counter::addWeakPointer()
+{
+    _weakCount++;
+}
+
+void Counter::removeSharedPointer()
+{
+    if (--_useCount == 0)
+    {
+        _weakCount--;
+    }
+}
+
+void Counter::removeWeakPointer()
+{
+    _weakCount--;
 }

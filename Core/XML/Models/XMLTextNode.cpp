@@ -6,7 +6,7 @@ MySharedPtr<XMLNode> XMLTextNode::clone() const
 	return new XMLTextNode(*this);
 }
 
-XMLTextNode::XMLTextNode(const MyString& textContent, XMLNode* parent) : XMLNode(parent)
+XMLTextNode::XMLTextNode(const MyString& textContent)
 {
 	setTextContent(textContent);
 }
