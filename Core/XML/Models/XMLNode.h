@@ -16,4 +16,5 @@ public:
 
 	virtual MySharedPtr<XMLNode> clone() const = 0;
 	virtual std::ostream& print(std::ostream& os, int indent = 0) const = 0;
+	virtual MyString textContent() const = 0;
 };

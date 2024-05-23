@@ -8,7 +8,7 @@ class XMLTextNode : public XMLNode
 public:
 	virtual MySharedPtr<XMLNode> clone() const override;
 	XMLTextNode(const MyString& textContent);
-	const MyString& textContent() const;
 	void setTextContent(const MyString& textContent);
 	std::ostream& print(std::ostream& os, int indent = 0) const override;
+	MyString textContent() const override;
 };

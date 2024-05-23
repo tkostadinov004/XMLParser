@@ -36,3 +36,8 @@ void XMLElementNodeWithID::setId(const MyString& id)
 {
 	_id = id;
 }
+
+MyString XMLElementNodeWithID::textContent() const
+{
+	return XMLElementNode::textContent();
+}

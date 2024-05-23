@@ -31,7 +31,7 @@ public:
 	MySharedPtr<XMLNamespace> getDefinedNamespaceByName(const MyString& nsName) const;
 
 	void setTagName(const MyString& tagName);
-	void assignNamespace(const XMLNamespace& ns);
+	void assignNamespace(const MyString& namespaceName);
 	void addAttribute(const XMLAttribute& attribute);
 	void addAttributes(const MyVector<XMLAttribute>& attributes);
 	void changeAttribute(const MyString& attributeName, const MyString& newValue);
@@ -42,6 +42,7 @@ public:
 	//void defineNamespace(XMLNamespace& xmlNamespace);
 
 	std::ostream& print(std::ostream& os, int indent = 0) const override;
+	virtual MyString textContent() const override;
 
 	friend class XMLDocument;
 	friend class XMLDocumentWithID;

@@ -49,10 +49,10 @@ XPathQueryComponent XPathQuery::parseComponent(const MyString& component) const
 
 MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, const MyString& query)
 {
-	/*MyVector<const XMLNode*> result;
-	result.push_back(root);
+	MyVector<const XMLNode*> result;
+	result.push_back(root.get());
 
-	MyVector<XPathQueryComponent> components = query.split('/').convertTo<XPathQueryComponent>([this](const MyString& str) {return this->parseComponent(str);});
+	MyVector<XPathQueryComponent> components = query.split('/', true).convertTo<XPathQueryComponent>([this](const MyString& str) {return this->parseComponent(str);});
 	
 	for (size_t i = 0; i < components.size(); i++)
 	{
@@ -86,7 +86,7 @@ MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, 
 			{
 				if (const XMLElementNode* current = dynamic_cast<const XMLElementNode*>(result[j]))
 				{
-					nextElements.append_range(current->getDescendants());
+					nextElements.append_range(current->getDescendants().convertTo<const XMLNode*>([](MySharedPtr<const XMLNode> ptr) {return ptr.get();}));
 				}
 			}
 		}
@@ -94,7 +94,7 @@ MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, 
 		{
 			for (size_t j = 0; j < result.size(); j++)
 			{
-				if (const XMLNode* parent = result[j]->parent())
+				if (const XMLNode* parent = result[j]->parent().get())
 				{
 					nextElements.push_back(parent);
 				}
@@ -106,7 +106,7 @@ MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, 
 			{
 				if (const XMLElementNode* current = dynamic_cast<const XMLElementNode*>(result[j]))
 				{
-					nextElements.append_range(current->getAncestors());
+					nextElements.append_range(current->getAncestors().convertTo<const XMLNode*>([](MyWeakPtr<XMLElementNode> ptr) {return ptr.get();}));
 				}
 			}
 		}
@@ -139,15 +139,6 @@ MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, 
 	
 	return result.convertTo<MyString>([](const XMLNode* node)
 		{
-			if (const XMLTextNode* conv = dynamic_cast<const XMLTextNode*>(node))
-			{
-				return conv->textContent();
-			}
-			else
-			{
-				const XMLElementNode* conv1 = dynamic_cast<const XMLElementNode*>(node);
-				return conv1->getTagName();
-			}
-		});*/
-return MyVector<MyString>();
+			return MyString("\"" + node->textContent() + "\"");
+		});
 }

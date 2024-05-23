@@ -9,7 +9,12 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	static int indentationLevel = 0;
 
 	MyString tag = getTagName();
-	os << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "<" << tag;
+	os << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "<";
+	if (this->_namespace)
+	{
+		os << this->_namespace->getKey() << ':';
+	}
+	os << this->getTagName();
 	if (!this->_attributes.empty())
 	{
 		os << " " << join(this->_attributes.convertTo<MyString>([](const XMLAttribute& attr) {return attr.getKey() + "=\"" + attr.getValue() + "\"";}));
@@ -35,6 +40,16 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	}
 	os << std::endl << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</" << tag << ">";
 	return os;
+}
+
+MyString XMLElementNode::textContent() const
+{
+	MyVector<MyString> result;
+	for (size_t i = 0; i < _children.size(); i++)
+	{
+		result.push_back(_children[i]->textContent().trim());
+	}
+	return join(result);
 }
 
 XMLElementNode::XMLElementNode(const MyString& tagName)
@@ -135,12 +150,12 @@ void XMLElementNode::setTagName(const MyString& tagName)
 	this->_tagName = tagName;
 }
 
-void XMLElementNode::assignNamespace(const XMLNamespace& ns)
+void XMLElementNode::assignNamespace(const MyString& namespaceName)
 {
-	MySharedPtr<XMLNamespace> obtained = getDefinedNamespaceByName(ns.getKey());
+	MySharedPtr<XMLNamespace> obtained = getDefinedNamespaceByName(namespaceName);
 	if (!obtained)
 	{
-		throw std::exception(MyString("Namespace \"" + ns.getKey() + "\" is not defined!").c_str());
+		throw std::exception(MyString("Namespace \"" + namespaceName + "\" is not defined!").c_str());
 	}
 	this->_namespace = obtained;
 }

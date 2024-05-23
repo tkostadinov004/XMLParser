@@ -70,6 +70,10 @@ void Engine::handleCommandLine(const MyVector<MyString>& commandLine)
 	{
 		_xmlController.print();
 	}
+	else if (command == "cls")
+	{
+		system("cls");
+	}
 	else if (command == "select")
 	{
 		const MyString& nodeId = commandLine[1];

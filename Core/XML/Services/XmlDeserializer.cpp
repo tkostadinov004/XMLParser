@@ -188,11 +188,6 @@ XMLDocument XMLDeserializer::deserialize()
 			else if (isTerminator(c))
 			{
 				state = State::EndOfTag;
-				if (currentTagName.contains(":"))
-				{
-					MyString nsName = currentTagName.split(':')[0];
-					current.assignNamespace(XMLNamespace(nsName, currentTagName.split(':')[1]));
-				}
 				if (!isRootSet)
 				{
 					previousParent->setTagName(current.getTagName());
@@ -223,12 +218,14 @@ XMLDocument XMLDeserializer::deserialize()
 
 			if (current.getTagName().contains(":"))
 			{
-				MyString nsName = current.getTagName().split(':')[0];
-				current.assignNamespace(XMLNamespace(nsName, current.getTagName().split(':')[1]));
+				MyVector<MyString> splittedTag = current.getTagName().split(':');
+				current.assignNamespace(splittedTag[0]);
+				current.setTagName(splittedTag[1]);
 			}
 			if (!isRootSet)
 			{
 				*previousParent = current;
+				current = XMLElementNode();
 				isRootSet = true;
 				continue;
 			}

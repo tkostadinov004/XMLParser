@@ -11,4 +11,5 @@ public:
 	virtual MySharedPtr<XMLNode> clone() const override;
 	const MyString& getId() const;
 	void setId(const MyString& id);
+	virtual MyString textContent() const override;
 };
