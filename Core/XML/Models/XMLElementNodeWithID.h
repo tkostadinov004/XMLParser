@@ -8,7 +8,7 @@ public:
 	XMLElementNodeWithID() = default;
 	XMLElementNodeWithID(const XMLElementNode& node);
 	XMLElementNodeWithID(const MyString& tagName, const MyString& id, XMLElementNodeWithID* parent = nullptr);
-	virtual XMLNode* clone() const override;
+	virtual MySharedPtr<XMLNode> clone() const override;
 	const MyString& getId() const;
 	void setId(const MyString& id);
 };

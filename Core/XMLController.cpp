@@ -56,7 +56,7 @@ void XMLController::print() const
 
 void XMLController::selectAttribute(const MyString& nodeId, const MyString& attributeName) const
 {
-	const XMLElementNodeWithID* selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
+	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		std::cout << ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId);
@@ -75,7 +75,7 @@ void XMLController::selectAttribute(const MyString& nodeId, const MyString& attr
 
 void XMLController::changeAttributeValue(const MyString& nodeId, const MyString& attributeName, const MyString& newValue)
 {
-	XMLElementNodeWithID* selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
+	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		std::cout << ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId);
@@ -99,7 +99,7 @@ void XMLController::changeAttributeValue(const MyString& nodeId, const MyString&
 
 void XMLController::printChildrenOfNode(const MyString& nodeId) const
 {
-	const XMLElementNodeWithID* selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
+	const MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		std::cout << ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId);
@@ -135,7 +135,7 @@ void XMLController::printChildrenOfNode(const MyString& nodeId) const
 
 void XMLController::printInnerText(const MyString& nodeId) const
 {
-	const XMLElementNodeWithID* selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
+	const MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		std::cout << ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId);
@@ -143,13 +143,13 @@ void XMLController::printInnerText(const MyString& nodeId) const
 	}
 
 	std::cout << "Text of node with id: " << nodeId << std::endl;
-	MyStack<const XMLNode*> stack;
+	MyStack<MySharedPtr<XMLNode>> stack;
 
 	stack.push(selectedNode);
 	while (!stack.empty())
 	{
-		const XMLNode* current = stack.pop();
-		if (const XMLElementNodeWithID* nodeWithChildren = dynamic_cast<const XMLElementNodeWithID*>(current))
+		MySharedPtr<XMLNode> current = stack.pop();
+		if (const MySharedPtr<XMLElementNodeWithID> nodeWithChildren = current)
 		{
 			for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)
 			{
@@ -173,7 +173,7 @@ void XMLController::deleteAttribute(const MyString& nodeId, const MyString& attr
 		return;
 	}
 
-	XMLElementNodeWithID* selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
+	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		std::cout << ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId);
@@ -193,7 +193,7 @@ void XMLController::deleteAttribute(const MyString& nodeId, const MyString& attr
 
 void XMLController::addChild(const MyString& nodeId)
 {
-	XMLElementNodeWithID* selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
+	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const XMLElementNodeWithID* node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		std::cout << ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId);

@@ -1,7 +1,7 @@
 #include "XMLTextNode.h"
 #include <iomanip>
 
-XMLNode* XMLTextNode::clone() const
+MySharedPtr<XMLNode> XMLTextNode::clone() const
 {
 	return new XMLTextNode(*this);
 }

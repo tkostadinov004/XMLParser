@@ -43,48 +43,48 @@ MyString XMLRepository::getContents() const
     return MyString(ss.str().c_str());
 }
 
-const XMLElementNodeWithID* XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred) const
+const MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred) const
 {
-    MyStack<const XMLNode*> stack;
+    MyStack<MySharedPtr<XMLNode>> stack;
 
-    stack.push(_xmlDocument.root());
+    stack.push(_xmlDocument.root().get());
     while (!stack.empty())
     {
-        const XMLNode* current = stack.pop();
-        if (const XMLElementNodeWithID* nodeWithChildren = dynamic_cast<const XMLElementNodeWithID*>(current))
+        const MySharedPtr<XMLElementNodeWithID> current = dynamic_cast<XMLElementNodeWithID*>(stack.pop().get());
+        if (current)
         {
-            if (pred(nodeWithChildren))
+            if (pred(current.get()))
             {
-                return nodeWithChildren;
+                return current;
             }
 
-            for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)
+            for (int i = current->children().size() - 1; i >= 0; i--)
             {
-                stack.push(nodeWithChildren->children()[i].get());
+                stack.push(current->children()[i]);
             }
         }
     }
     return nullptr;
 }
 
-XMLElementNodeWithID* XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred)
+MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred)
 {
-    MyStack<XMLNode*> stack;
+    MyStack<MySharedPtr<XMLNode>> stack;
 
-    stack.push(_xmlDocument.root());
+    stack.push(_xmlDocument.root().get());
     while (!stack.empty())
     {
-        XMLNode* current = stack.pop();
-        if (XMLElementNodeWithID* nodeWithChildren = dynamic_cast<XMLElementNodeWithID*>(current))
+        MySharedPtr<XMLElementNodeWithID> current = dynamic_cast<XMLElementNodeWithID*>(stack.pop().get());
+        if (current)
         {
-            if (pred(nodeWithChildren))
+            if (pred(current.get()))
             {
-                return nodeWithChildren;
+                return current;
             }
 
-            for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)
+            for (int i = current->children().size() - 1; i >= 0; i--)
             {
-                stack.push(nodeWithChildren->children()[i].get());
+                stack.push(current->children()[i]);
             }
         }
     }

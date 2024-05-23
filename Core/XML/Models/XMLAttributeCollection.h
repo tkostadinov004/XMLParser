@@ -1,6 +1,7 @@
 #pragma once
 #include "../../../Utils/MyVector/MyVector.hpp"
 #include "XMLAttribute.h"
+#include "../../../Utils/MySharedPtr/MySharedPtr.hpp"
 
 class XMLAttributeCollection : public MyVector<XMLAttribute>
 {

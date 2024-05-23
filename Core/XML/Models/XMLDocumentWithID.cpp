@@ -3,28 +3,16 @@
 #include "XMLTextNode.h"
 GroupVector XMLDocumentWithID::idGroups;
 
-static void convertNodeToWithID(XMLNode* node)
+static void convertNodeToWithID(MySharedPtr<XMLElementNode> node)
 {
-	if (XMLElementNode* elementNode = dynamic_cast<XMLElementNode*>(node))
+	for (int i = 0; i < node->children().size(); i++)
 	{
-		XMLElementNodeWithID* newElementNode = dynamic_cast<XMLElementNodeWithID*>(node);
-		for (int i = 0; i < elementNode->children().size(); i++)
+		if (MySharedPtr<XMLElementNode> childAsElementNode = dynamic_cast<XMLElementNode*>(node->children()[i].get()))
 		{
-			XMLNode*& currentChild = elementNode->children()[i].get();
-			if (auto textNode = dynamic_cast<const XMLTextNode*>(currentChild))
-			{
-				continue;
-			}
-			if (const XMLElementNode* childAsElementNode = dynamic_cast<const XMLElementNode*>(currentChild))
-			{
-				XMLElementNodeWithID* converted = new XMLElementNodeWithID(*childAsElementNode);
-				delete currentChild;
-				currentChild = converted;
-			}
-
-			convertNodeToWithID(currentChild);
-			//XMLNode* child = new XMLElementNodeWithID(elementNode->getTagName(), "");// convertNodeToWithID(elementNode->children()[i].get());
-			//newElementNode->addChild(child);
+			MySharedPtr<XMLElementNodeWithID> converted = new XMLElementNodeWithID(*childAsElementNode);
+			//delete currentChild;
+			childAsElementNode = converted;
+			convertNodeToWithID(converted);
 		}
 	}
 }
@@ -49,7 +37,7 @@ void XMLDocumentWithID::setIdToElement(XMLElementNodeWithID* element)
 		idGroups.add(resultId);
 		element->addAttribute(XMLAttribute("id", resultId));
 	}
-	
+
 	element->setId(resultId);
 }
 
@@ -72,21 +60,15 @@ void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root)
 	}
 }
 
-void XMLDocumentWithID::convertToXID(XMLNode* node)
-{
-
-}
-
 void XMLDocumentWithID::resolveIdConflicts()
 {
-	resolveIdConflicts(_root);
+	resolveIdConflicts(_root.get());
 }
 
 XMLDocumentWithID::XMLDocumentWithID(const XMLDocument& xml)
 {
-	delete _root;
 	_root = new XMLElementNodeWithID(*xml.root());
-	convertNodeToWithID(_root);
+	//convertNodeToWithID(_root);
 	resolveIdConflicts();
 }
 

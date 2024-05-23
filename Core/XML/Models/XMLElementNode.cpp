@@ -42,12 +42,12 @@ XMLElementNode::XMLElementNode(const MyString& tagName, XMLElementNode* parent) 
 	setTagName(tagName);
 }
 
-XMLNode* XMLElementNode::clone() const
+MySharedPtr<XMLNode> XMLElementNode::clone() const
 {
 	return new XMLElementNode(*this);
 }
 
-const XMLNamespace* XMLElementNode::getNamespace() const
+const MySharedPtr<XMLNamespace>& XMLElementNode::getNamespace() const
 {
 	return _namespace;
 }
@@ -62,19 +62,19 @@ const XMLAttributeCollection& XMLElementNode::attributes() const
 	return _attributes;
 }
 
-const MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children() const
+const MyVector<MySharedPtr<XMLNode>>& XMLElementNode::children() const
 {
 	return _children;
 }
 
-MyVector<PointerWrapper<XMLNode>>& XMLElementNode::children()
+MyVector<MySharedPtr<XMLNode>>& XMLElementNode::children()
 {
 	return _children;
 }
 
-MyVector<const XMLNode*> XMLElementNode::getDescendants() const
+MyVector<MySharedPtr<const XMLNode>> XMLElementNode::getDescendants() const
 {
-	MyVector<const XMLNode*> result;
+	MyVector<MySharedPtr<const XMLNode>> result;
 	MyStack<const XMLNode*> stack;
 	stack.push(this);
 	while (!stack.empty())
@@ -95,34 +95,34 @@ MyVector<const XMLNode*> XMLElementNode::getDescendants() const
 	return result;
 }
 
-MyVector<const XMLNode*> XMLElementNode::getAncestors() const
+MyVector<const XMLElementNode*> XMLElementNode::getAncestors() const
 {
-	MyVector<const XMLNode*> result;
-	const XMLNode* parent = this->parent();
+	MyVector<const XMLElementNode*> result;
+	const XMLElementNode* parent = dynamic_cast<const XMLElementNode*>(this->parent());
 	while (parent)
 	{
 		result.push_back(parent);
-		parent = parent->parent();
+		parent = dynamic_cast<const XMLElementNode*>(this->parent());
 	}
 	return result;
 }
 
-const MyVector<XMLNamespace>& XMLElementNode::definedNamespaces() const
+const MyVector<MySharedPtr<XMLNamespace>>& XMLElementNode::definedNamespaces() const
 {
 	return _definedNamespaces;
 }
 
-const XMLNamespace* XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
+const MySharedPtr<XMLNamespace>& XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
 {
 	for (size_t i = 0; i < _definedNamespaces.size(); i++)
 	{
-		if (_definedNamespaces[i].getKey() == nsName)
+		if (_definedNamespaces[i]->getKey() == nsName)
 		{
-			return &_definedNamespaces[i];
+			return _definedNamespaces[i];
 		}
 	}
 
-	const XMLElementNode* ptr = dynamic_cast<const XMLElementNode*>(parent());
+	const XMLElementNode* ptr = dynamic_cast<const XMLElementNode*>(this->parent());
 	if (ptr)
 	{
 		ptr->getDefinedNamespaceByName(nsName);
@@ -137,7 +137,7 @@ void XMLElementNode::setTagName(const MyString& tagName)
 
 void XMLElementNode::assignNamespace(const XMLNamespace& ns)
 {
-	const XMLNamespace* obtained = getDefinedNamespaceByName(ns.getKey());
+	MySharedPtr<XMLNamespace> obtained = getDefinedNamespaceByName(ns.getKey());
 	if (!obtained)
 	{
 		throw std::exception(MyString("Namespace \"" + ns.getKey() + "\" is not defined!").c_str());
@@ -158,9 +158,9 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 		if (current.getKey().starts_with("xmlns"))
 		{
 			MyString nsName = current.getKey().split(':')[1];
-			if (!_definedNamespaces.any([nsName](const XMLNamespace& ns) {return nsName == ns.getKey();}))
+			if (!_definedNamespaces.any([nsName](const MySharedPtr<XMLNamespace>& ns) {return nsName == ns->getKey();}))
 			{
-				_definedNamespaces.push_back(XMLNamespace(nsName, current.getValue()));
+				_definedNamespaces.push_back(new XMLNamespace(nsName, current.getValue()));
 			}
 		}
 		addAttribute(attributes[i]);
@@ -169,7 +169,7 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 
 void XMLElementNode::changeAttribute(const MyString& attributeName, const MyString& newValue)
 {
-	if (XMLAttribute* attribute = _attributes[attributeName])
+	if (MySharedPtr<XMLAttribute> attribute = _attributes[attributeName])
 	{
 		attribute->setValue(newValue);
 	}
@@ -195,9 +195,8 @@ bool XMLElementNode::hasTextChild(const MyString& content) const
 	return false;
 }
 
-void XMLElementNode::addChild(XMLNode* child)
+void XMLElementNode::addChild(const MySharedPtr<XMLNode>& child)
 {
-	child->setParent(this);
 	this->_children.push_back(child);
 }
 
@@ -205,8 +204,8 @@ void XMLElementNode::addChild(const XMLNode& child)
 {
 	addChild(child.clone());
 }
-
-void XMLElementNode::defineNamespace(XMLNamespace& xmlNamespace)
-{
-	this->_definedNamespaces.push_back(xmlNamespace);
-}
+//
+//void XMLElementNode::defineNamespace(XMLNamespace& xmlNamespace)
+//{
+//	this->_definedNamespaces.push_back(xmlNamespace);
+//}

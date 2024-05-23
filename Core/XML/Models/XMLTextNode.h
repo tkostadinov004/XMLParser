@@ -6,7 +6,7 @@ class XMLTextNode : public XMLNode
 {
 	MyString _textContent;
 public:
-	virtual XMLNode* clone() const override;
+	virtual MySharedPtr<XMLNode> clone() const override;
 	XMLTextNode(const MyString& textContent, XMLNode* parent = nullptr);
 	const MyString& textContent() const;
 	void setTextContent(const MyString& textContent);

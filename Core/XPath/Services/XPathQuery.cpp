@@ -47,9 +47,9 @@ XPathQueryComponent XPathQuery::parseComponent(const MyString& component) const
     return result;
 }
 
-MyVector<MyString> XPathQuery::evaluate(const XMLElementNode* root, const MyString& query)
+MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, const MyString& query)
 {
-	MyVector<const XMLNode*> result;
+	/*MyVector<const XMLNode*> result;
 	result.push_back(root);
 
 	MyVector<XPathQueryComponent> components = query.split('/').convertTo<XPathQueryComponent>([this](const MyString& str) {return this->parseComponent(str);});
@@ -67,7 +67,7 @@ MyVector<MyString> XPathQuery::evaluate(const XMLElementNode* root, const MyStri
 				{
 					MyVector<const XMLElementNode*> children =
 						current->children()
-						.convertTo<const XMLElementNode*>([](const PointerWrapper<XMLNode>& pw) {return dynamic_cast<const XMLElementNode*>(pw.get());})
+						.convertTo<const XMLElementNode*>([](const MySharedPtr<XMLNode>& pw) {return dynamic_cast<const XMLElementNode*>(pw.get());})
 						.filter([&currentComponent](const XMLElementNode* node) {return node && node->getTagName() == currentComponent.getTag();});
 					if (currentComponent.getIndex() != -1 && currentComponent.getIndex() < children.size())
 					{
@@ -148,5 +148,6 @@ MyVector<MyString> XPathQuery::evaluate(const XMLElementNode* root, const MyStri
 				const XMLElementNode* conv1 = dynamic_cast<const XMLElementNode*>(node);
 				return conv1->getTagName();
 			}
-		});
+		});*/
+return MyVector<MyString>();
 }

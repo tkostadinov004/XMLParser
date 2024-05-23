@@ -9,7 +9,6 @@ class XMLDocumentWithID : public XMLDocument
 	static GroupVector idGroups;
 	void setIdToElement(XMLElementNodeWithID* element);
 	void resolveIdConflicts(XMLElementNode* node);
-	void convertToXID(XMLNode* node);
 public:
 	void resolveIdConflicts();
 	XMLDocumentWithID() = default;

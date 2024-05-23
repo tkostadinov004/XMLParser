@@ -103,10 +103,11 @@ XMLDocument XMLDeserializer::deserialize()
 		throw FileError("Unable to open or create file!");
 	}
 
-	XMLDocument result;
 	bool isRootSet = false;
 
-	XMLElementNode* previousParent = result.root();
+	MySharedPtr<XMLElementNode> root = new XMLElementNode();
+	XMLElementNode* previousParent = root.get();
+	
 	State state = State::Initial;
 	MyString currentTagName;
 	MyString currentPlainText;
@@ -167,12 +168,12 @@ XMLDocument XMLDeserializer::deserialize()
 				}
 				else
 				{
-					XMLElementNode* currentDyn = new XMLElementNode(current);
+					MySharedPtr<XMLElementNode> currentDyn = new XMLElementNode(current);
 					currentDyn->setParent(previousParent);
 					previousParent->addChild(currentDyn);
 					if (!isSelfClosing)
 					{
-						previousParent = currentDyn;
+						previousParent = currentDyn.get();
 					}
 					current = XMLElementNode();
 				}
@@ -194,10 +195,10 @@ XMLDocument XMLDeserializer::deserialize()
 				current.assignNamespace(XMLNamespace(nsName, current.getTagName().split(':')[1]));
 			}
 
-			XMLElementNode* currentDyn = new XMLElementNode(current);
+			MySharedPtr<XMLElementNode> currentDyn = new XMLElementNode(current);
 			currentDyn->setParent(previousParent);
 			previousParent->addChild(currentDyn);
-			previousParent = currentDyn;
+			previousParent = currentDyn.get();
 			current = XMLElementNode();
 		}
 		else if ((state == State::EndOfTag || state == State::Initial) && !isWhitespace(c) && c != '<' && c != '>')
@@ -211,7 +212,7 @@ XMLDocument XMLDeserializer::deserialize()
 			currentPlainText = currentPlainText.trim();
 			if (!currentPlainText.empty())
 			{
-				XMLTextNode* resultTextNode = new XMLTextNode(currentPlainText);
+				MySharedPtr<XMLTextNode> resultTextNode = new XMLTextNode(currentPlainText);
 				resultTextNode->setParent(previousParent);
 				previousParent->addChild(resultTextNode);
 				currentPlainText.clear();
@@ -236,13 +237,13 @@ XMLDocument XMLDeserializer::deserialize()
 			state = State::Initial;
 		}
 	}
-	auto a = result.root()->children()[2];
 	if (!tags.empty())
 	{
 		MyString unclosedTags = join(tags.convertTo<MyString>([](const MyString& tag) {return tag;}), ", ");
 		throw std::exception(MyString("Opening tags for: " + unclosedTags + " are not defined!").c_str());
 	}
-	return result;
+	return XMLDocument(root);
+
 }
 
 const MyString& XMLDeserializer::getWorkingPath() const

@@ -19,8 +19,8 @@ public:
 	bool remove(const MyString& id);
 	MyString getContents() const;
 	//void selectAttribute(const MyString& nodeId, const MyString& attributeName) const;
-	const XMLElementNodeWithID* find(std::function<bool(const XMLElementNodeWithID*)> pred) const;
-	XMLElementNodeWithID* find(std::function<bool(const XMLElementNodeWithID*)> pred);
+	const MySharedPtr<XMLElementNodeWithID> find(std::function<bool(const XMLElementNodeWithID*)> pred) const;
+	MySharedPtr<XMLElementNodeWithID> find(std::function<bool(const XMLElementNodeWithID*)> pred);
 	void resolveIdConflicts();
 	MyVector<MyString> handleXPath(const MyString& query) const;
 };

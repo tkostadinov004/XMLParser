@@ -5,12 +5,12 @@ XMLNode::XMLNode(XMLNode* parent)
 	setParent(parent);
 }
 
-XMLNode*& XMLNode::parent()
+XMLNode* XMLNode::parent()
 {
 	return _parent;
 }
 
-const XMLNode* const& XMLNode::parent() const
+const XMLNode* XMLNode::parent() const
 {
 	return _parent;
 }
