@@ -226,7 +226,12 @@ XMLDocument XMLDeserializer::deserialize()
 				MyString nsName = current.getTagName().split(':')[0];
 				current.assignNamespace(XMLNamespace(nsName, current.getTagName().split(':')[1]));
 			}
-
+			if (!isRootSet)
+			{
+				*previousParent = current;
+				isRootSet = true;
+				continue;
+			}
 			MySharedPtr<XMLElementNode> currentDyn = new XMLElementNode(current);
 			currentDyn->setParent(previousParent);
 			previousParent->addChild(currentDyn);
