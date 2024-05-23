@@ -12,7 +12,7 @@ MySharedPtr<XMLNode> XMLElementNodeWithID::clone() const
 
 XMLElementNodeWithID::XMLElementNodeWithID(const XMLElementNode& node) : XMLElementNode(node)
 {
-	/*_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& nodePtr)
+	_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& nodePtr)
 		{
 			XMLNode* result = nullptr;
 			if (XMLElementNode* elPtr = dynamic_cast<XMLElementNode*>(nodePtr.get()))
@@ -24,7 +24,7 @@ XMLElementNodeWithID::XMLElementNodeWithID(const XMLElementNode& node) : XMLElem
 				result = new XMLTextNode(*textPtr);
 			}
 			return result;
-		});*/
+		});
 }
 
 const MyString& XMLElementNodeWithID::getId() const

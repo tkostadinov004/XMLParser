@@ -62,6 +62,7 @@ void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root)
 
 void XMLDocumentWithID::resolveIdConflicts()
 {
+	setIdToElement(dynamic_cast<XMLElementNodeWithID*>(_root.get()));
 	resolveIdConflicts(_root.get());
 }
 
