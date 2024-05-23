@@ -107,7 +107,7 @@ XMLDocument XMLDeserializer::deserialize()
 
 	MySharedPtr<XMLElementNode> root = new XMLElementNode();
 	MyWeakPtr<XMLElementNode> previousParent = root;
-	
+
 	State state = State::Initial;
 	MyString currentTagName;
 	MyString currentPlainText;
@@ -117,7 +117,23 @@ XMLDocument XMLDeserializer::deserialize()
 	while (!ifs.eof())
 	{
 		char c = ifs.get();
-		if (c == '<')
+		if (state == State::InComment)
+		{
+			if (c == '-')
+			{
+				if (ifs.get() == '-')
+				{
+					if (ifs.get() == '>')
+					{
+						state = State::Initial;
+						continue;
+					}
+					ifs.seekg(-1, std::ios::cur);
+				}
+				ifs.seekg(-1, std::ios::cur);
+			}
+		}
+		else if (c == '<')
 		{
 			state = State::StartOfTag;
 		}
@@ -128,8 +144,24 @@ XMLDocument XMLDeserializer::deserialize()
 				state = State::StartOfClosingTag;
 				continue;
 			}
-			state = State::CurrentlyReadingTag;
-			currentTagName += c;
+			else if (c == '!')
+			{
+				if (ifs.get() == '-')
+				{
+					if (ifs.get() == '-')
+					{
+						state = State::InComment;
+						continue;
+					}
+					ifs.seekg(-1, std::ios::cur);
+				}
+				ifs.seekg(-1, std::ios::cur);
+			}
+			else
+			{
+				state = State::CurrentlyReadingTag;
+				currentTagName += c;
+			}
 		}
 		else if (state == State::CurrentlyReadingTag)
 		{
@@ -243,7 +275,6 @@ XMLDocument XMLDeserializer::deserialize()
 		throw std::exception(MyString("Opening tags for: " + unclosedTags + " are not defined!").c_str());
 	}
 	return XMLDocument(root);
-
 }
 
 const MyString& XMLDeserializer::getWorkingPath() const

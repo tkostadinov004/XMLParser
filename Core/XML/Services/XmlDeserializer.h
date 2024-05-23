@@ -1,5 +1,6 @@
 #pragma once
 #include <fstream>
+#include <sstream>
 #include "..\Models\XMLDocument.h"
 #include "..\..\..\Utils\MyString\MyString.h"
 
@@ -8,6 +9,7 @@ enum class State
 	Initial,
 	StartOfTag,
 	CurrentlyReadingTag,
+	InComment,
 	CurrentlyReadingAttributes,
 	CurrentlyReadingPlainText,
 	EndOfPlainText,
