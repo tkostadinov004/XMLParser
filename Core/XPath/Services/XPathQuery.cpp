@@ -30,13 +30,13 @@ XPathQueryComponent XPathQuery::parseComponent(const MyString& component) const
 		}
 		else
 		{
-			if (componentCopy.ends_with("]"))
+			if (componentCopy.starts_with("@"))
 			{
 				result.setAttributeExists(componentCopy.substr(1).takeWhile([](char c) {return c != ']';}));
 			}
 			else
 			{
-				result.setIndex(std::atoi(componentCopy.substr(1).takeWhile([](char c) {return c != ']';}).c_str()));
+				result.setIndex(std::atoi(componentCopy.takeWhile([](char c) {return c != ']';}).c_str()) - 1);
 			}
 		}
 	}

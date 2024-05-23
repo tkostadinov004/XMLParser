@@ -12,6 +12,7 @@ class MyWeakPtr
 	void free();
 public:
 	MyWeakPtr() = default;
+	MyWeakPtr(T* ptr);
 	MyWeakPtr(MySharedPtr<T>& ptr);
 	MyWeakPtr(const MyWeakPtr<T>& other);
 	MyWeakPtr(MyWeakPtr<T>&& other);
@@ -61,6 +62,16 @@ void MyWeakPtr<T>::free()
 	{
 		delete _refCounter;
 		_refCounter = nullptr;
+	}
+}
+
+template<typename T>
+MyWeakPtr<T>::MyWeakPtr(T* ptr) : _ptr(ptr)
+{
+	if (_ptr)
+	{
+		_refCounter = new Counter();
+		_refCounter->addWeakPointer();
 	}
 }
 

@@ -206,5 +206,5 @@ void XMLController::addChild(const MyString& nodeId)
 
 void XMLController::handleXPath(const MyString& query) const
 {
-	std::cout << "[" << join(_repository.handleXPath(query), ",") << "]" << std::endl;
+	std::cout << "[" << join(_repository.handleXPath(query), ", ") << "]" << std::endl;
 }

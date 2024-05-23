@@ -50,10 +50,12 @@ void MySharedPtr<T>::free()
 	if (_refCounter->getSharedCount() == 0)
 	{
 		delete _ptr;
+		_ptr = nullptr;
 	}
 	if (_refCounter->getWeakCount() == 0)
 	{
 		delete _refCounter;
+		_refCounter = nullptr;
 	}
 }
 

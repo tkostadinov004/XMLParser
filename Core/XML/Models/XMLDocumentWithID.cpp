@@ -3,18 +3,48 @@
 #include "XMLTextNode.h"
 GroupVector XMLDocumentWithID::idGroups;
 
-static void convertNodeToWithID(MySharedPtr<XMLElementNode> node)
+bool isRootSet = false;
+static void convertNodeToWithID(MySharedPtr<XMLNode> node)
 {
-	for (int i = 0; i < node->children().size(); i++)
+	if (!node)
 	{
-		if (MySharedPtr<XMLElementNode> childAsElementNode = dynamic_cast<XMLElementNode*>(node->children()[i].get()))
-		{
-			MySharedPtr<XMLElementNodeWithID> converted = new XMLElementNodeWithID(*childAsElementNode);
-			//delete currentChild;
-			childAsElementNode = converted;
-			convertNodeToWithID(converted);
-		}
+		return;
 	}
+	if (auto elementNode = dynamic_cast<XMLElementNode*>(node.get())) 
+	{
+		auto newNode = MySharedPtr<XMLElementNodeWithID>(new XMLElementNodeWithID(*elementNode));
+		node = newNode;
+	}
+
+	if (auto elementNode = dynamic_cast<XMLElementNode*>(node.get())) 
+	{
+		for (size_t i = 0; i < elementNode->children().size(); i++)
+		{
+			convertNodeToWithID(elementNode->children()[i]);
+		}	
+	}
+	/*for (size_t i = 0; i < node->children().size(); i++)
+	{
+		node->children()[i]->setParent(node);
+		if (XMLElementNode* conv = dynamic_cast<XMLElementNode*>(node->children()[i].get()))
+		{
+			node->children()[i] = new XMLElementNodeWithID(*conv);
+			node->children()[i]->setParent(node->parent());
+			convertNodeToWithID(node->children()[i]);
+		}
+
+	}*/
+	//for (int i = 0; i < node->children().size(); i++)
+	//{
+	//	if (MySharedPtr<XMLElementNode> childAsElementNode = dynamic_cast<XMLElementNode*>(node->children()[i].get()))
+	//	{
+	//		MySharedPtr<XMLElementNodeWithID> converted = new XMLElementNodeWithID(*childAsElementNode);
+	//		//converted->setParent(node);
+	//		//delete currentChild;
+	//		childAsElementNode = converted;
+	//		convertNodeToWithID(childAsElementNode);
+	//	}
+	//}
 }
 
 void XMLDocumentWithID::setIdToElement(XMLElementNodeWithID* element)
@@ -68,8 +98,10 @@ void XMLDocumentWithID::resolveIdConflicts()
 
 XMLDocumentWithID::XMLDocumentWithID(const XMLDocument& xml)
 {
-	_root = new XMLElementNodeWithID(*xml.root());
-	//convertNodeToWithID(_root);
+	MySharedPtr<XMLElementNode> newRoot = xml.root();
+	//MyWeakPtr<XMLElementNodeWithID> previousParent = newRoot;
+	convertNodeToWithID(newRoot);
+	_root = newRoot;
 	resolveIdConflicts();
 }
 
