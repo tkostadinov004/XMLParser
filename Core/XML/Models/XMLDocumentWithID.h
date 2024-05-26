@@ -2,6 +2,7 @@
 #include "XMLDocument.h"
 #include "../../../Utils/GroupVector/GroupVector.h"
 #include "../Models/XMLElementNodeWithID.h"
+#include "XMLElementNodeWithID.h"
 
 class XMLDocumentWithID : public XMLDocument
 {
@@ -9,6 +10,7 @@ class XMLDocumentWithID : public XMLDocument
 	static GroupVector idGroups;
 	void setIdToElement(XMLElementNodeWithID* element);
 	void resolveIdConflicts(XMLElementNode* node);
+	MySharedPtr<XMLElementNode> convertNodeToWithID(MySharedPtr<XMLElementNode> src, MyWeakPtr<XMLElementNode> parent);
 public:
 	void resolveIdConflicts();
 	XMLDocumentWithID() = default;

@@ -43,50 +43,52 @@ MyString XMLRepository::getContents() const
     return MyString(ss.str().c_str());
 }
 
-const MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred) const
+const MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const MySharedPtr<XMLElementNodeWithID>)> pred) const
 {
     MyStack<MySharedPtr<XMLNode>> stack;
 
-    stack.push(_xmlDocument.root().get());
+    stack.push(_xmlDocument.root());
     while (!stack.empty())
     {
-        const MySharedPtr<XMLElementNodeWithID> current = dynamic_cast<XMLElementNodeWithID*>(stack.pop().get());
-        if (current)
+        const MySharedPtr<XMLNode> current = stack.peek();
+        if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
         {
-            if (pred(current.get()))
+            if (pred(current))
             {
                 return current;
             }
 
-            for (int i = current->children().size() - 1; i >= 0; i--)
+            for (int i = currentChild->children().size() - 1; i >= 0; i--)
             {
-                stack.push(current->children()[i]);
+                stack.push(currentChild->children()[i]);
             }
         }
+        stack.pop();
     }
     return nullptr;
 }
 
-MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const XMLElementNodeWithID*)> pred)
+MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(MySharedPtr<XMLElementNodeWithID>)> pred)
 {
     MyStack<MySharedPtr<XMLNode>> stack;
 
-    stack.push(_xmlDocument.root().get());
+    stack.push(_xmlDocument.root());
     while (!stack.empty())
     {
-        MySharedPtr<XMLElementNodeWithID> current = dynamic_cast<XMLElementNodeWithID*>(stack.pop().get());
-        if (current)
+        MySharedPtr<XMLNode> current = stack.peek();
+        if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
         {
-            if (pred(current.get()))
+            if (pred(current))
             {
                 return current;
             }
 
-            for (int i = current->children().size() - 1; i >= 0; i--)
+            for (int i = currentChild->children().size() - 1; i >= 0; i--)
             {
-                stack.push(current->children()[i]);
+                stack.push(currentChild->children()[i]);
             }
         }
+        stack.pop();
     }
     return nullptr;
 }

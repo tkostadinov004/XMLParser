@@ -12,19 +12,39 @@ MySharedPtr<XMLNode> XMLElementNodeWithID::clone() const
 
 XMLElementNodeWithID::XMLElementNodeWithID(const XMLElementNode& node) : XMLElementNode(node)
 {
-	/*_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& nodePtr)
+	this->_definedNamespaces = _definedNamespaces.convertTo<MySharedPtr<XMLNamespace>>([](const MySharedPtr<XMLNamespace>& ptr) {return new XMLNamespace(*ptr);});
+	if (this->_namespace)
+	{
+		this->_namespace = getDefinedNamespaceByName(this->_namespace->getKey());
+	}
+
+	/*this->_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& ptr)
 		{
 			MySharedPtr<XMLNode> result = nullptr;
-			if (XMLElementNode* elPtr = dynamic_cast<XMLElementNode*>(nodePtr.get()))
+			if (XMLElementNode* elPtr = dynamic_cast<XMLElementNode*>(ptr.get()))
 			{
-				result =  new XMLElementNodeWithID(*elPtr);
+				result = new XMLElementNodeWithID(*elPtr);
 			}
-			else if(XMLTextNode* textPtr = dynamic_cast<XMLTextNode*>(nodePtr.get()))
+			else if (XMLTextNode* textPtr = dynamic_cast<XMLTextNode*>(ptr.get()))
 			{
 				result = new XMLTextNode(*textPtr);
 			}
 			return result;
 		});*/
+		//this->ns
+		/*_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& nodePtr)
+			{
+				MySharedPtr<XMLNode> result = nullptr;
+				if (XMLElementNode* elPtr = dynamic_cast<XMLElementNode*>(nodePtr.get()))
+				{
+					result =  new XMLElementNodeWithID(*elPtr);
+				}
+				else if(XMLTextNode* textPtr = dynamic_cast<XMLTextNode*>(nodePtr.get()))
+				{
+					result = new XMLTextNode(*textPtr);
+				}
+				return result;
+			});*/
 }
 
 const MyString& XMLElementNodeWithID::getId() const

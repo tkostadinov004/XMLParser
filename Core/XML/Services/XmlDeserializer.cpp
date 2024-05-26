@@ -111,6 +111,7 @@ XMLDocument XMLDeserializer::deserialize()
 	State state = State::Initial;
 	MyString currentTagName;
 	MyString currentPlainText;
+	MyString currentNamespaceName;
 
 	XMLElementNode current;
 	MyStack<MyString> tags;
@@ -179,6 +180,15 @@ XMLDocument XMLDeserializer::deserialize()
 			}
 			current.setTagName(currentTagName);
 			currentTagName.clear();
+			if (current.getTagName().contains(":"))
+			{
+				MyVector<MyString> splittedTag = current.getTagName().split(':');
+				if (!current.getNamespace())
+				{
+					currentNamespaceName = splittedTag[0];
+				}
+				current.setTagName(splittedTag[1]);
+			}
 
 			if (isWhitespace(c))
 			{
@@ -198,6 +208,11 @@ XMLDocument XMLDeserializer::deserialize()
 					MySharedPtr<XMLElementNode> currentDyn = new XMLElementNode(current);
 					currentDyn->setParent(previousParent);
 					previousParent->addChild(currentDyn);
+					if (!currentNamespaceName.empty())
+					{
+						current.assignNamespace(currentNamespaceName);
+						currentNamespaceName.clear();
+					}
 					if (!isSelfClosing)
 					{
 						previousParent = currentDyn;
@@ -209,21 +224,23 @@ XMLDocument XMLDeserializer::deserialize()
 		}
 		else if (state == State::CurrentlyReadingAttributes)
 		{
-			MyVector<XMLAttribute> attributes = splitAndIgnore(readAttributes(ifs)
-				.trimEnd())
+			MyString attributeString = readAttributes(ifs).trimEnd();
+			bool isSelfClosing = attributeString.ends_with("/");
+			if (isSelfClosing)
+			{
+				attributeString = attributeString.substr(0, attributeString.length() - 1);
+				tags.pop();
+				c = ifs.get();
+			}
+			MyVector<XMLAttribute> attributes = splitAndIgnore(attributeString)
 				.convertTo<XMLAttribute>([this](const MyString& arg) {return deserializeAttribute(arg);});
 			current.addAttributes(attributes);
 			state = State::EndOfTag;
 			c = ifs.get();
 
-			if (current.getTagName().contains(":"))
-			{
-				MyVector<MyString> splittedTag = current.getTagName().split(':');
-				current.assignNamespace(splittedTag[0]);
-				current.setTagName(splittedTag[1]);
-			}
 			if (!isRootSet)
 			{
+				current.assignNamespace(currentNamespaceName);
 				*previousParent = current;
 				current = XMLElementNode();
 				isRootSet = true;
@@ -232,13 +249,25 @@ XMLDocument XMLDeserializer::deserialize()
 			MySharedPtr<XMLElementNode> currentDyn = new XMLElementNode(current);
 			currentDyn->setParent(previousParent);
 			previousParent->addChild(currentDyn);
+			if (!currentNamespaceName.empty())
+			{
+				current.assignNamespace(currentNamespaceName);
+				currentNamespaceName.clear();
+			}
 			previousParent = currentDyn;
 			current = XMLElementNode();
 		}
-		else if ((state == State::EndOfTag || state == State::Initial) && !isWhitespace(c) && c != '<' && c != '>')
+		else if ((state == State::EndOfTag || state == State::Initial))
 		{
-			state = State::CurrentlyReadingPlainText;
-			currentPlainText += c;
+			if (!isWhitespace(c) && c != '<' && c != '>')
+			{
+				state = State::CurrentlyReadingPlainText;
+				currentPlainText += c;
+			}
+			else if (!currentNamespaceName.empty())
+			{
+				throw std::exception("Invalid namespace!");
+			}
 		}
 		else if (state == State::CurrentlyReadingPlainText)
 		{

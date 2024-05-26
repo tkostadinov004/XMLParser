@@ -159,7 +159,6 @@ void XMLElementNode::assignNamespace(const MyString& namespaceName)
 	}
 	this->_namespace = obtained;
 }
-
 void XMLElementNode::addAttribute(const XMLAttribute& attribute)
 {
 	this->_attributes.push_back(attribute);

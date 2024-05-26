@@ -147,7 +147,7 @@ T* MyWeakPtr<T>::operator->() const
 template<typename T>
 MyWeakPtr<T>::operator bool() const
 {
-	return _refCounter && _refCounter->getSharedCount() == 0;
+	return _refCounter && _refCounter->getSharedCount() > 0;
 }
 
 template<typename T>
