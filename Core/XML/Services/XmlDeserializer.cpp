@@ -210,7 +210,7 @@ XMLDocument XMLDeserializer::deserialize()
 					previousParent->addChild(currentDyn);
 					if (!currentNamespaceName.empty())
 					{
-						current.assignNamespace(currentNamespaceName);
+						currentDyn->assignNamespace(currentNamespaceName);
 						currentNamespaceName.clear();
 					}
 					if (!isSelfClosing)
@@ -251,7 +251,7 @@ XMLDocument XMLDeserializer::deserialize()
 			previousParent->addChild(currentDyn);
 			if (!currentNamespaceName.empty())
 			{
-				current.assignNamespace(currentNamespaceName);
+				currentDyn->assignNamespace(currentNamespaceName);
 				currentNamespaceName.clear();
 			}
 			previousParent = currentDyn;
@@ -263,10 +263,6 @@ XMLDocument XMLDeserializer::deserialize()
 			{
 				state = State::CurrentlyReadingPlainText;
 				currentPlainText += c;
-			}
-			else if (!currentNamespaceName.empty())
-			{
-				throw std::exception("Invalid namespace!");
 			}
 		}
 		else if (state == State::CurrentlyReadingPlainText)

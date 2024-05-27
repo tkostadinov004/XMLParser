@@ -38,7 +38,12 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 		_children[i]->print(os, indentationLevel);
 		indentationLevel--;
 	}
-	os << std::endl << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</" << tag << ">";
+	os << std::endl << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</";
+	if (this->_namespace)
+	{
+		os << this->_namespace->getKey() << ':';
+	}
+	os << tag << ">";
 	return os;
 }
 
@@ -140,7 +145,7 @@ MySharedPtr<XMLNamespace> XMLElementNode::getDefinedNamespaceByName(const MyStri
 	MyWeakPtr<XMLElementNode> ptr = this->parent();
 	if (ptr)
 	{
-		ptr->getDefinedNamespaceByName(nsName);
+		return ptr->getDefinedNamespaceByName(nsName);
 	}
 	return nullptr;
 }
