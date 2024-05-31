@@ -9,7 +9,7 @@ public:
 	using MyVector<T>::empty;
 	using MyVector<T>::convertTo;
 	void push(const T& element);
-	const T& pop();
+	void pop();
 	const T& peek() const;
 };
 
@@ -20,11 +20,9 @@ void MyStack<T>::push(const T& element)
 }
 
 template<typename T>
-const T& MyStack<T>::pop()
+void MyStack<T>::pop()
 {
-	T popped = MyVector<T>::back();
 	MyVector<T>::pop_back();
-	return popped;
 }
 
 template<typename T>

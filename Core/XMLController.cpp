@@ -148,7 +148,8 @@ void XMLController::printInnerText(const MyString& nodeId) const
 	stack.push(selectedNode);
 	while (!stack.empty())
 	{
-		MySharedPtr<XMLNode> current = stack.pop();
+		MySharedPtr<XMLNode> current = stack.peek();
+		stack.pop();
 		if (const MySharedPtr<XMLElementNodeWithID> nodeWithChildren = current)
 		{
 			for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)

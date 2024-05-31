@@ -19,9 +19,9 @@ public:
 	MyWeakPtr& operator=(const MyWeakPtr<T>& other);
 	MyWeakPtr& operator=(MyWeakPtr<T>&& other);
 	~MyWeakPtr();
-	T* get() const;
 	T& operator*() const;
 	T* operator->() const;
+	const T* get() const;
 	operator bool() const;
 
 	template <typename U>
@@ -127,21 +127,21 @@ MyWeakPtr<T>::~MyWeakPtr()
 }
 
 template<typename T>
-T* MyWeakPtr<T>::get() const
-{
-	return _ptr;
-}
-
-template<typename T>
 T& MyWeakPtr<T>::operator*() const
 {
-	return *get();
+	return *_ptr;
 }
 
 template<typename T>
 T* MyWeakPtr<T>::operator->() const
 {
-	return get();
+	return _ptr;
+}
+
+template<typename T>
+const T* MyWeakPtr<T>::get() const
+{
+	return _ptr;
 }
 
 template<typename T>

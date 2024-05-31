@@ -15,7 +15,7 @@ XMLElementNodeWithID::XMLElementNodeWithID(const XMLElementNode& node) : XMLElem
 	this->_definedNamespaces = _definedNamespaces.convertTo<MySharedPtr<XMLNamespace>>([](const MySharedPtr<XMLNamespace>& ptr) {return new XMLNamespace(*ptr);});
 	if (this->_namespace)
 	{
-		this->_namespace = getDefinedNamespaceByName(this->_namespace->getKey());
+		this->_namespace = getDefinedNamespaceByName(this->_namespace->getName());
 	}
 
 	/*this->_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& ptr)

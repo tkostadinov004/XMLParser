@@ -1,8 +1,8 @@
 #pragma once
 #include <fstream>
 #include <sstream>
-#include "..\Models\XMLDocument.h"
-#include "..\..\..\Utils\MyString\MyString.h"
+#include "..\../Models\XMLDocument.h"
+#include "..\..\..\../Utils\MyString\MyString.h"
 
 enum class State
 {

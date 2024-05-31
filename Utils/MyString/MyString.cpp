@@ -206,6 +206,16 @@ MyString::~MyString()
 	free();
 }
 
+Iterator<char> MyString::begin() const
+{
+	return Iterator<char>(0, _data);
+}
+
+Iterator<char> MyString::end() const
+{
+	return Iterator<char>(_size, _data);
+}
+
 char MyString::at(int index) const
 {
 	if (index < 0 || index >= _size)

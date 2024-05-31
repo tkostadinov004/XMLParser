@@ -12,12 +12,12 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	os << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "<";
 	if (this->_namespace)
 	{
-		os << this->_namespace->getKey() << ':';
+		os << this->_namespace->getName() << ':';
 	}
 	os << this->getTagName();
 	if (!this->_attributes.empty())
 	{
-		os << " " << join(this->_attributes.convertTo<MyString>([](const XMLAttribute& attr) {return attr.getKey() + "=\"" + attr.getValue() + "\"";}));
+		os << " " << join(this->_attributes.convertTo<MyString>([](const XMLAttribute& attr) {return attr.toString();}));
 	}
 	if (_children.empty())
 	{
@@ -41,7 +41,7 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	os << std::endl << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</";
 	if (this->_namespace)
 	{
-		os << this->_namespace->getKey() << ':';
+		os << this->_namespace->getName() << ':';
 	}
 	os << tag << ">";
 	return os;
@@ -99,7 +99,8 @@ MyVector<MySharedPtr<const XMLNode>> XMLElementNode::getDescendants() const
 	stack.push(this);
 	while (!stack.empty())
 	{
-		const XMLNode* popped = stack.pop();
+		const XMLNode* popped = stack.peek();
+		stack.pop();
 		if (popped != this)
 		{
 			result.push_back(popped);
@@ -136,7 +137,7 @@ MySharedPtr<XMLNamespace> XMLElementNode::getDefinedNamespaceByName(const MyStri
 {
 	for (size_t i = 0; i < _definedNamespaces.size(); i++)
 	{
-		if (_definedNamespaces[i]->getKey() == nsName)
+		if (_definedNamespaces[i]->getName() == nsName)
 		{
 			return _definedNamespaces[i];
 		}
@@ -166,7 +167,9 @@ void XMLElementNode::assignNamespace(const MyString& namespaceName)
 }
 void XMLElementNode::addAttribute(const XMLAttribute& attribute)
 {
-	this->_attributes.push_back(attribute);
+	XMLAttribute attr = attribute;
+	attr.setOwner(this);
+	this->_attributes.push_back(attr);
 }
 
 void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
@@ -177,7 +180,7 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 		if (current.getKey().starts_with("xmlns"))
 		{
 			MyString nsName = current.getKey().split(':')[1];
-			if (!_definedNamespaces.any([nsName](const MySharedPtr<XMLNamespace>& ns) {return nsName == ns->getKey();}))
+			if (!_definedNamespaces.any([nsName](const MySharedPtr<XMLNamespace>& ns) {return nsName == ns->getName();}))
 			{
 				_definedNamespaces.push_back(new XMLNamespace(nsName, current.getValue()));
 			}
@@ -191,6 +194,22 @@ void XMLElementNode::changeAttribute(const MyString& attributeName, const MyStri
 	if (MySharedPtr<XMLAttribute> attribute = _attributes[attributeName])
 	{
 		attribute->setValue(newValue);
+	}
+}
+
+void XMLElementNode::addNamespaces(const MyVector<XMLNamespace>& namespaces)
+{
+	for (const XMLNamespace& ns : namespaces)
+	{
+		int index = _definedNamespaces.indexOf([&ns](const MySharedPtr<XMLNamespace>& internalNs) {return internalNs->getName() == ns.getName();});
+		if (index == -1)
+		{
+			_definedNamespaces.push_back(new XMLNamespace(ns));
+		}
+		else
+		{
+			_definedNamespaces[index]->setValue(ns.getValue());
+		}
 	}
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include "../MyVector/MyVector.hpp"
+#include "../Iterator.hpp"
 
 static const size_t npos = -1;
 class MyString
@@ -24,6 +25,9 @@ public:
 	MyString& operator=(const MyString& other);
 	MyString& operator=(MyString&& other) noexcept;
 	~MyString();
+
+	Iterator<char> begin() const;
+	Iterator<char> end() const;
 
 	char at(int index) const;
 	char& operator[](int index);

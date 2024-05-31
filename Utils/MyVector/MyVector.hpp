@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <functional>
+#include "../Iterator.hpp"
 
 namespace HelperFunctions
 {
@@ -29,7 +30,10 @@ public:
 	MyVector(MyVector<T>&& other);
 	MyVector<T>& operator=(const MyVector& other);
 	MyVector<T>& operator=(MyVector&& other);
-	virtual ~MyVector();
+	~MyVector();
+	
+	Iterator<T> begin() const;
+	Iterator<T> end() const;
 
 	size_t size() const;
 	size_t capacity() const;
@@ -222,6 +226,18 @@ MyVector<T>& MyVector<T>::operator=(MyVector&& other)
 		moveFrom(std::move(other));
 	}
 	return *this;
+}
+
+template<typename T>
+Iterator<T> MyVector<T>::begin() const
+{
+	return Iterator<T>(0, _data);
+}
+
+template<typename T>
+Iterator<T> MyVector<T>::end() const
+{
+	return Iterator<T>(_size, _data);
 }
 
 template<typename T>
