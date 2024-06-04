@@ -4,7 +4,7 @@
 #include "..\../../../Models\XMLElementNode.h"
 class XMLTextNodeBuilder : public XMLBuilder<XMLTextNode>
 {
-	MySharedPtr<XMLTextNode> _node;
+	MySharedPtr<XMLTextNode> _node = nullptr;
 public:
 	explicit XMLTextNodeBuilder(DataReader& reader);
 	void buildContent();

@@ -1,6 +1,7 @@
 #pragma once
 #include <istream>
 #include "../../../../../Utils/MyString/MyString.h"
+#include "../../../../../Utils/Readers/Reader.h"
 struct DeserializedAttribute
 {
 	MyString _key, _value, _namespaceName;
@@ -11,11 +12,10 @@ struct AttributeReaderResult
 	MyVector<DeserializedAttribute> attributes;
 	bool isTagSelfClosing = false;
 };
-class DataReader
+class DataReader : public Reader
 {
 	std::istream& is;
 
-	MyVector<MyString> splitAndIgnore(const MyString& str, char delim = ' ', bool removeEmptyEntries = false);
 	void skipWhitespace();
 	MyString takeWhile(bool(*pred)(char));
 	MyString getAttributesString();

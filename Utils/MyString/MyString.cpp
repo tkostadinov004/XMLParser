@@ -206,14 +206,14 @@ MyString::~MyString()
 	free();
 }
 
-Iterator<char> MyString::begin() const
+StringIterator MyString::begin() const
 {
-	return Iterator<char>(0, _data);
+	return StringIterator(_data, 0);
 }
 
-Iterator<char> MyString::end() const
+StringIterator MyString::end() const
 {
-	return Iterator<char>(_size, _data);
+	return StringIterator(_data, _size);
 }
 
 char MyString::at(int index) const

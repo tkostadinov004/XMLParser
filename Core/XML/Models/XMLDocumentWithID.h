@@ -7,7 +7,7 @@
 class XMLDocumentWithID : public XMLDocument
 {
 	int generated = 0;
-	static GroupVector idGroups;
+	GroupVector idGroups;
 	void setIdToElement(XMLElementNodeWithID* element);
 	void resolveIdConflicts(XMLElementNode* node);
 	MySharedPtr<XMLElementNode> convertNodeToWithID(MySharedPtr<XMLElementNode> src, MyWeakPtr<XMLElementNode> parent);

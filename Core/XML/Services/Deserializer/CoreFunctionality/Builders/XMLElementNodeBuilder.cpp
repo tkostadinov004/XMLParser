@@ -66,13 +66,17 @@ MySharedPtr<XMLElementNode> XMLElementNodeBuilder::flush(MyWeakPtr<XMLElementNod
 		parent->addChild(_resultObject._node);
 	}
 
+	MyWeakPtr<XMLElementNode> target = _resultObject._node;
 	MyVector<XMLNamespace> namespaces = _resultObject._namespaces.convertTo<XMLNamespace>([](const DeserializedAttribute& attr)
 		{
 			return XMLNamespace(attr._key, attr._value);
 		});
 	_resultObject._node->addNamespaces(namespaces);
-
-	MyWeakPtr<XMLElementNode> target = _resultObject._node;
+	_resultObject._node->addAttributes(_resultObject._namespaces.convertTo<XMLAttribute>([target](const DeserializedAttribute& attr)
+		{
+			return XMLAttribute(attr._key, attr._value, "", target);
+		}));
+	
 	MyVector<XMLAttribute> attributes = _resultObject._attributes.convertTo<XMLAttribute>([target](const DeserializedAttribute& attr)
 		{
 			return XMLAttribute(attr._key, attr._value, attr._namespaceName, target);

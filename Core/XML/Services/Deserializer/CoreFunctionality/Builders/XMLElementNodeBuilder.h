@@ -15,7 +15,7 @@ struct TemporaryBuildingObject
 	MyVector<DeserializedAttribute> _namespaces;
 	TemporaryBuildingObject()
 	{
-		_node = MySharedPtr<XMLElementNode>(new XMLElementNode());
+		_node = new XMLElementNode();
 	}
 };
 class XMLElementNodeBuilder : public XMLBuilder<XMLElementNode>

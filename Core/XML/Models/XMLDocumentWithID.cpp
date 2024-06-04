@@ -1,51 +1,6 @@
 #include "XMLDocumentWithID.h"
 #include "..\..\..\Utils\MyStack\MyStack.hpp"
 #include "XMLTextNode.h"
-GroupVector XMLDocumentWithID::idGroups;
-
-//bool isRootSet = false;
-//static MySharedPtr<XMLNode> convertNodeToWithID(MySharedPtr<XMLNode> node, MyWeakPtr<XMLNode> parent)
-//{
-//	if (!node)
-//	{
-//		return;
-//	}
-//	if (auto elementNode = dynamic_cast<XMLElementNode*>(node.get())) 
-//	{
-//		auto newNode = MySharedPtr<XMLElementNodeWithID>(new XMLElementNodeWithID(*elementNode));
-//		node = newNode;
-//	}
-//
-//	if (auto elementNode = dynamic_cast<XMLElementNode*>(node.get())) 
-//	{
-//		for (size_t i = 0; i < elementNode->children().size(); i++)
-//		{
-//			convertNodeToWithID(elementNode->children()[i]);
-//		}	
-//	}
-//	/*for (size_t i = 0; i < node->children().size(); i++)
-//	{
-//		node->children()[i]->setParent(node);
-//		if (XMLElementNode* conv = dynamic_cast<XMLElementNode*>(node->children()[i].get()))
-//		{
-//			node->children()[i] = new XMLElementNodeWithID(*conv);
-//			node->children()[i]->setParent(node->parent());
-//			convertNodeToWithID(node->children()[i]);
-//		}
-//
-//	}*/
-//	//for (int i = 0; i < node->children().size(); i++)
-//	//{
-//	//	if (MySharedPtr<XMLElementNode> childAsElementNode = dynamic_cast<XMLElementNode*>(node->children()[i].get()))
-//	//	{
-//	//		MySharedPtr<XMLElementNodeWithID> converted = new XMLElementNodeWithID(*childAsElementNode);
-//	//		//converted->setParent(node);
-//	//		//delete currentChild;
-//	//		childAsElementNode = converted;
-//	//		convertNodeToWithID(childAsElementNode);
-//	//	}
-//	//}
-//}
 
 void XMLDocumentWithID::setIdToElement(XMLElementNodeWithID* element)
 {
@@ -92,7 +47,7 @@ void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root)
 
 MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(MySharedPtr<XMLElementNode> src, MyWeakPtr<XMLElementNode> parent)
 {
-	if (!parent)
+	if (!parent || !src)
 	{
 		return nullptr;
 	}
@@ -115,6 +70,10 @@ MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(MySharedPtr<X
 
 void XMLDocumentWithID::resolveIdConflicts()
 {
+	if (!_root)
+	{
+		return;
+	}
 	setIdToElement(dynamic_cast<XMLElementNodeWithID*>(_root.get()));
 	resolveIdConflicts(_root.get());
 }

@@ -1,7 +1,7 @@
 #pragma once
 #include <iostream>
 #include <functional>
-#include "../Iterator.hpp"
+#include "../Iterators/VectorIterator.hpp"
 
 namespace HelperFunctions
 {
@@ -32,8 +32,8 @@ public:
 	MyVector<T>& operator=(MyVector&& other);
 	~MyVector();
 	
-	Iterator<T> begin() const;
-	Iterator<T> end() const;
+	VectorIterator<T> begin() const;
+	VectorIterator<T> end() const;
 
 	size_t size() const;
 	size_t capacity() const;
@@ -229,15 +229,15 @@ MyVector<T>& MyVector<T>::operator=(MyVector&& other)
 }
 
 template<typename T>
-Iterator<T> MyVector<T>::begin() const
+VectorIterator<T> MyVector<T>::begin() const
 {
-	return Iterator<T>(0, _data);
+	return VectorIterator<T>(_data, 0);
 }
 
 template<typename T>
-Iterator<T> MyVector<T>::end() const
+VectorIterator<T> MyVector<T>::end() const
 {
-	return Iterator<T>(_size, _data);
+	return VectorIterator<T>(_data, _size);
 }
 
 template<typename T>

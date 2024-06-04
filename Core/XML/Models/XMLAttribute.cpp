@@ -29,6 +29,11 @@ void XMLAttribute::setKey(const MyString& key)
     if (namespaceSeparatorIndex != -1)
     {
         MyString namespaceName = key.substr(0, namespaceSeparatorIndex);
+        if (namespaceName == "xmlns")
+        {
+            this->_key = key;
+            return;
+        }
         MyString attributeName = key.substr(namespaceSeparatorIndex + 1);
         assignNamespace(namespaceName);
         this->_key = attributeName;

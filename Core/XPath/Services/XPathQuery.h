@@ -7,5 +7,5 @@ class XPathQuery
 {
 	XPathQueryComponent parseComponent(const MyString& component) const;
 public:
-	MyVector<MyString> evaluate(const MySharedPtr<XMLElementNode> root, const MyString& query);
+	MyVector<MyString> evaluate(const MySharedPtr<XMLElementNode> root, const MyString& queryString);
 };

@@ -8,36 +8,6 @@ static bool isTerminator(char c)
 	return c == '>';
 }
 
-MyVector<MyString> DataReader::splitAndIgnore(const MyString& str, char delim, bool removeEmptyEntries)
-{
-	MyVector<MyString> splitted;
-	bool isInQuotes = false;
-
-	MyString temp;
-	for (size_t i = 0; i < str.length(); i++)
-	{
-		if (str[i] == delim && !isInQuotes)
-		{
-			if (removeEmptyEntries && temp.empty())
-			{
-				continue;
-			}
-			splitted.push_back(temp);
-			temp.clear();
-		}
-		else if (str[i] == '\"')
-		{
-			isInQuotes = !isInQuotes;
-		}
-		else
-		{
-			temp.append(str[i]);
-		}
-	}
-	splitted.push_back(temp);
-	return splitted;
-}
-
 void DataReader::skipWhitespace()
 {
 	char c = is.get();

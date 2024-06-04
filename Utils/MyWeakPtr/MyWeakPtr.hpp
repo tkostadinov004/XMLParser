@@ -23,6 +23,7 @@ public:
 	T* operator->() const;
 	const T* get() const;
 	operator bool() const;
+	MySharedPtr<T> promote() const;
 
 	template <typename U>
 	MyWeakPtr(const MyWeakPtr<U>& other);
@@ -148,6 +149,12 @@ template<typename T>
 MyWeakPtr<T>::operator bool() const
 {
 	return _refCounter && _refCounter->getSharedCount() > 0;
+}
+
+template<typename T>
+inline MySharedPtr<T> MyWeakPtr<T>::promote() const
+{
+	return MySharedPtr<T>(_ptr, _refCounter);
 }
 
 template<typename T>

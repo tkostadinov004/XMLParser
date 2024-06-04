@@ -17,6 +17,6 @@ MySharedPtr<XMLTextNode> XMLTextNodeBuilder::flush(MyWeakPtr<XMLElementNode> par
     parent->addChild(_node);
 
     MySharedPtr<XMLTextNode> result = _node;
-    _node = MySharedPtr<XMLTextNode>(new XMLTextNode());
+    _node = new XMLTextNode();
     return result;
 }

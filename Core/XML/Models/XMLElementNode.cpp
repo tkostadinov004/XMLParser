@@ -27,7 +27,7 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 	if (_children.size() == 1)
 	{
 		_children.back()->print(os);
-		os << "</" << tag << ">";
+		os << "</" << (this->_namespace ? this->_namespace->getName() + ":" : "") << tag << ">";
 		return os;
 	}
 	for (size_t i = 0; i < _children.size(); i++)

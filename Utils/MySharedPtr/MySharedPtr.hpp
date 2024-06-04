@@ -10,6 +10,7 @@ class MySharedPtr
 	Counter* _refCounter = nullptr;
 	void copyFrom(const MySharedPtr& other);
 	void free();
+	MySharedPtr(T* ptr, Counter* counter);
 public:
 	MySharedPtr(T* ptr = nullptr);
 	~MySharedPtr();
@@ -56,6 +57,17 @@ void MySharedPtr<T>::free()
 	{
 		delete _refCounter;
 		_refCounter = nullptr;
+	}
+}
+
+template<typename T>
+MySharedPtr<T>::MySharedPtr(T* ptr, Counter* counter)
+{
+	_ptr = ptr;
+	_refCounter = counter;
+	if (_ptr && _refCounter)
+	{
+		_refCounter->addSharedPointer();
 	}
 }
 

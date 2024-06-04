@@ -9,7 +9,7 @@ class XMLContext
 	XMLElementNodeBuilder _elementNodeBuilder;
 	XMLTextNodeBuilder _textNodeBuilder;
 	MyStack<MyString> _tags;
-	MySharedPtr<XMLElementNode> _resultRoot;
+	MySharedPtr<XMLElementNode> _resultRoot = nullptr;
 	MyWeakPtr<XMLElementNode> _previousParent = _resultRoot;
 public:
 	explicit XMLContext(DataReader& reader);
