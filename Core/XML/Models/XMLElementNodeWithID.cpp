@@ -17,34 +17,6 @@ XMLElementNodeWithID::XMLElementNodeWithID(const XMLElementNode& node) : XMLElem
 	{
 		this->_namespace = getDefinedNamespaceByName(this->_namespace->getName());
 	}
-
-	/*this->_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& ptr)
-		{
-			MySharedPtr<XMLNode> result = nullptr;
-			if (XMLElementNode* elPtr = dynamic_cast<XMLElementNode*>(ptr.get()))
-			{
-				result = new XMLElementNodeWithID(*elPtr);
-			}
-			else if (XMLTextNode* textPtr = dynamic_cast<XMLTextNode*>(ptr.get()))
-			{
-				result = new XMLTextNode(*textPtr);
-			}
-			return result;
-		});*/
-		//this->ns
-		/*_children = _children.convertTo<MySharedPtr<XMLNode>>([](const MySharedPtr<XMLNode>& nodePtr)
-			{
-				MySharedPtr<XMLNode> result = nullptr;
-				if (XMLElementNode* elPtr = dynamic_cast<XMLElementNode*>(nodePtr.get()))
-				{
-					result =  new XMLElementNodeWithID(*elPtr);
-				}
-				else if(XMLTextNode* textPtr = dynamic_cast<XMLTextNode*>(nodePtr.get()))
-				{
-					result = new XMLTextNode(*textPtr);
-				}
-				return result;
-			});*/
 }
 
 const MyString& XMLElementNodeWithID::getId() const

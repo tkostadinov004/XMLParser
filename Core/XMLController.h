@@ -18,6 +18,7 @@ public:
 	void selectAttribute(const MyString& nodeId, const MyString& attributeName) const;
 	void changeAttributeValue(const MyString& nodeId, const MyString& attributeName, const MyString& newValue);
 	void printChildrenOfNode(const MyString& nodeId) const;
+	void printNthChild(const MyString& nodeId, int childIndex) const;
 	void printInnerText(const MyString& nodeId) const;
 	void deleteAttribute(const MyString& nodeId, const MyString& attributeName);
 	void addChild(const MyString& nodeId);

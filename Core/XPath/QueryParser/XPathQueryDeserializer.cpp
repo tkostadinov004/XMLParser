@@ -1,4 +1,5 @@
 #include "XPathQueryDeserializer.h"
+#include "..\..\..\Utils\HelperFunctions.h"
 
 XPathQueryComponent XPathQueryDeserializer::parseComponent(const MyString& component) const
 {
@@ -68,7 +69,7 @@ XPathQueryComponent XPathQueryDeserializer::parseComponent(const MyString& compo
 			else
 			{
 				result.setIsIndexDefined(true);
-				result.setIndex(std::atoi(componentCopy.takeWhile([](char c) {return c != ']';}).c_str()) - 1);
+				result.setIndex(HelperFunctions::parseInteger(componentCopy.takeWhile([](char c) {return c != ']';}).c_str()) - 1);
 			}
 		}
 		result.setAttributeFilter(filter);

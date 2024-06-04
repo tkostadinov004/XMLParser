@@ -30,12 +30,12 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 		os << "</" << (this->_namespace ? this->_namespace->getName() + ":" : "") << tag << ">";
 		return os;
 	}
-	for (size_t i = 0; i < _children.size(); i++)
+	for (const MySharedPtr<XMLElementNode>& child : _children)
 	{
 		os << std::endl;
 		indentationLevel++;
 
-		_children[i]->print(os, indentationLevel);
+		child->print(os, indentationLevel);
 		indentationLevel--;
 	}
 	os << std::endl << std::setfill(' ') << std::setw(indentationLevel * 3) << "" << "</";
@@ -50,9 +50,9 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 MyString XMLElementNode::textContent() const
 {
 	MyVector<MyString> result;
-	for (size_t i = 0; i < _children.size(); i++)
+	for (const MySharedPtr<XMLElementNode>& child : _children)
 	{
-		result.push_back(_children[i]->textContent().trim());
+		result.push_back(child->textContent().trim());
 	}
 	return join(result);
 }
@@ -67,7 +67,7 @@ MySharedPtr<XMLNode> XMLElementNode::clone() const
 	return new XMLElementNode(*this);
 }
 
-MySharedPtr<XMLNamespace> XMLElementNode::getNamespace() const
+const MySharedPtr<XMLNamespace>& XMLElementNode::getNamespace() const
 {
 	return _namespace;
 }
@@ -107,9 +107,9 @@ MyVector<MySharedPtr<const XMLNode>> XMLElementNode::getDescendants() const
 		}
 		if (const XMLElementNode* parent = dynamic_cast<const XMLElementNode*>(popped))
 		{
-			for (size_t i = 0; i < parent->children().size(); i++)
+			for (const MySharedPtr<XMLElementNode>& child : parent->children())
 			{
-				stack.push(parent->children()[i].get());
+				stack.push(child.get());
 			}
 		}
 	}
@@ -133,13 +133,13 @@ const MyVector<MySharedPtr<XMLNamespace>>& XMLElementNode::definedNamespaces() c
 	return _definedNamespaces;
 }
 
-MySharedPtr<XMLNamespace> XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
+const MySharedPtr<XMLNamespace>& XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
 {
-	for (size_t i = 0; i < _definedNamespaces.size(); i++)
+	for (const MySharedPtr<XMLNamespace>& ns : _definedNamespaces)
 	{
-		if (_definedNamespaces[i]->getName() == nsName)
+		if (ns->getName() == nsName)
 		{
-			return _definedNamespaces[i];
+			return ns;
 		}
 	}
 
@@ -174,18 +174,17 @@ void XMLElementNode::addAttribute(const XMLAttribute& attribute)
 
 void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 {
-	for (size_t i = 0; i < attributes.size(); i++)
+	for (const XMLAttribute& attribute : attributes)
 	{
-		const XMLAttribute& current = attributes[i];
-		if (current.getKey().starts_with("xmlns"))
+		if (attribute.getKey().starts_with("xmlns"))
 		{
-			MyString nsName = current.getKey().split(':')[1];
+			MyString nsName = attribute.getKey().split(':')[1];
 			if (!_definedNamespaces.any([nsName](const MySharedPtr<XMLNamespace>& ns) {return nsName == ns->getName();}))
 			{
-				_definedNamespaces.push_back(new XMLNamespace(nsName, current.getValue()));
+				_definedNamespaces.push_back(new XMLNamespace(nsName, attribute.getValue()));
 			}
 		}
-		addAttribute(attributes[i]);
+		addAttribute(attribute);
 	}
 }
 
@@ -220,9 +219,9 @@ bool XMLElementNode::deleteAttribute(const MyString& attributeName)
 
 bool XMLElementNode::hasTextChild(const MyString& content) const
 {
-	for (size_t i = 0; i < _children.size(); i++)
+	for (const MySharedPtr<XMLElementNode>& child : _children)
 	{
-		if (const XMLTextNode* textNode = dynamic_cast<const XMLTextNode*>(_children[i].get()))
+		if (const XMLTextNode* textNode = dynamic_cast<const XMLTextNode*>(child.get()))
 		{
 			if (textNode->textContent() == content)
 			{
@@ -233,7 +232,7 @@ bool XMLElementNode::hasTextChild(const MyString& content) const
 	return false;
 }
 
-void XMLElementNode::addChild(MySharedPtr<XMLNode> child)
+void XMLElementNode::addChild(const MySharedPtr<XMLNode>& child)
 {
 	this->_children.push_back(child);
 }
@@ -242,8 +241,3 @@ void XMLElementNode::addChild(const XMLNode& child)
 {
 	addChild(child.clone());
 }
-//
-//void XMLElementNode::defineNamespace(XMLNamespace& xmlNamespace)
-//{
-//	this->_definedNamespaces.push_back(xmlNamespace);
-//}

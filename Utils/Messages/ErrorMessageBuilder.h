@@ -18,4 +18,12 @@ struct ErrorMessageBuilder
 	{
 		return "Unable to find attribite with key \"" + attributeName + "\" in a node with id \"" + nodeId + "\"";
 	}
+	static const char* INVALID_INDEX()
+	{
+		return "Index is out of bounds!";
+	}
+	static const char* ATTRIBUTE_NAME_EMPTY()
+	{
+		return "Attribute name cannot be empty!";
+	}
 };

@@ -20,7 +20,7 @@ public:
 	explicit XMLElementNode(const MyString& tagName);
 	virtual MySharedPtr<XMLNode> clone() const override;
 
-	MySharedPtr<XMLNamespace> getNamespace() const;
+	const MySharedPtr<XMLNamespace>& getNamespace() const;
 	const MyString& getTagName() const;
 	const XMLAttributeCollection& attributes() const;
 	const MyVector<MySharedPtr<XMLNode>>& children() const;
@@ -28,7 +28,7 @@ public:
 	MyVector<MySharedPtr<const XMLNode>> getDescendants() const;
 	MyVector<MyWeakPtr<XMLElementNode>> getAncestors() const;
 	const MyVector<MySharedPtr<XMLNamespace>>& definedNamespaces() const;
-	MySharedPtr<XMLNamespace> getDefinedNamespaceByName(const MyString& nsName) const;
+	const MySharedPtr<XMLNamespace>& getDefinedNamespaceByName(const MyString& nsName) const;
 
 	void setTagName(const MyString& tagName);
 	void assignNamespace(const MyString& namespaceName);
@@ -38,9 +38,8 @@ public:
 	void changeAttribute(const MyString& attributeName, const MyString& newValue);
 	bool deleteAttribute(const MyString& attributeName);
 	bool hasTextChild(const MyString& content) const;
-	void addChild(MySharedPtr<XMLNode> child);
+	void addChild(const MySharedPtr<XMLNode>& child);
 	void addChild(const XMLNode& child);
-	//void defineNamespace(XMLNamespace& xmlNamespace);
 
 	std::ostream& print(std::ostream& os, int indent = 0) const override;
 	virtual MyString textContent() const override;

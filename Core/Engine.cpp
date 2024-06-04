@@ -1,4 +1,5 @@
 #include "Engine.h"
+#include "..\Utils\HelperFunctions.h"
 
 static MyVector<MyString> splitCommandLine(const MyString& str) 
 {
@@ -95,6 +96,13 @@ void Engine::handleCommandLine(const MyVector<MyString>& commandLine)
 
 		_xmlController.printChildrenOfNode(nodeId);
 	}
+	else if (command == "child")
+	{
+		const MyString& nodeId = commandLine[1];
+		int childIndex = HelperFunctions::parseInteger(commandLine[2]);
+
+		_xmlController.printNthChild(nodeId, childIndex);
+	}
 	else if (command == "text")
 	{
 		const MyString& nodeId = commandLine[1];
@@ -116,7 +124,6 @@ void Engine::handleCommandLine(const MyVector<MyString>& commandLine)
 	}
 	else if (command == "xpath")
 	{
-		//MyString query = join(commandLine.)
 		MyString query = commandLine[1];
 		_xmlController.handleXPath(query);
 	}
@@ -135,7 +142,14 @@ void Engine::run()
 		}
 		MyVector<MyString> commandLine = splitCommandLine(input);
 
-		handleCommandLine(commandLine);
+		try
+		{
+			handleCommandLine(commandLine);
+		}
+		catch (const std::exception& e)
+		{
+			std::cout << e.what() << std::endl;
+		}
 
 		getline(std::cin, input, 2048);
 	}

@@ -63,7 +63,6 @@ MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(MySharedPtr<X
 	for (size_t i = 0; i < src->children().size(); i++)
 	{
 		dest->children()[i] = convertNodeToWithID(src->children()[i], dest);
-		//dest->children()[i]->setParent(parent);
 	}
 	return dest;
 }

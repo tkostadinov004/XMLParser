@@ -7,19 +7,21 @@
 
 void XMLRepository::open(const MyString& path)
 {
-    XMLDeserializer deserializer(path);
-    _xmlDocument = deserializer.deserialize();
+	XMLDeserializer deserializer(path);
+	_xmlDocument = deserializer.deserialize();
+	_isOpen = true;
 }
 
 void XMLRepository::close()
 {
-    _xmlDocument = XMLDocumentWithID();
+	_xmlDocument = XMLDocumentWithID();
+	_isOpen = false;
 }
 
 void XMLRepository::saveAs(const MyString& path)
 {
-    XMLSerializer serializer(path);
-    serializer.serializeToStream(_xmlDocument);
+	XMLSerializer serializer(path);
+	serializer.serializeToStream(_xmlDocument);
 }
 
 void XMLRepository::add(const XMLElementNodeWithID& item)
@@ -28,78 +30,83 @@ void XMLRepository::add(const XMLElementNodeWithID& item)
 
 bool XMLRepository::remove(const XMLElementNodeWithID& item)
 {
-    return false;
+	return false;
 }
 
 bool XMLRepository::remove(const MyString& id)
 {
-    return false;
+	return false;
 }
 
 MyString XMLRepository::getContents() const
 {
-    std::stringstream ss;
-    ss << _xmlDocument;
-    return MyString(ss.str().c_str());
+	std::stringstream ss;
+	ss << _xmlDocument;
+	return MyString(ss.str().c_str());
+}
+
+bool XMLRepository::isOpen() const
+{
+	return _isOpen;
 }
 
 const MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const MySharedPtr<XMLElementNodeWithID>)> pred) const
 {
-    MyStack<MySharedPtr<XMLNode>> stack;
+	MyStack<MySharedPtr<XMLNode>> stack;
 
-    stack.push(_xmlDocument.root());
-    while (!stack.empty())
-    {
-        const MySharedPtr<XMLNode> current = stack.peek();
-        if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
-        {
-            if (pred(current))
-            {
-                return current;
-            }
+	stack.push(_xmlDocument.root());
+	while (!stack.empty())
+	{
+		const MySharedPtr<XMLNode> current = stack.peek();
+		if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
+		{
+			if (pred(current))
+			{
+				return current;
+			}
 
-            for (int i = currentChild->children().size() - 1; i >= 0; i--)
-            {
-                stack.push(currentChild->children()[i]);
-            }
-        }
-        stack.pop();
-    }
-    return nullptr;
+			for (int i = currentChild->children().size() - 1; i >= 0; i--)
+			{
+				stack.push(currentChild->children()[i]);
+			}
+		}
+		stack.pop();
+	}
+	return nullptr;
 }
 
 MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(MySharedPtr<XMLElementNodeWithID>)> pred)
 {
-    MyStack<MySharedPtr<XMLNode>> stack;
+	MyStack<MySharedPtr<XMLNode>> stack;
 
-    stack.push(_xmlDocument.root());
-    while (!stack.empty())
-    {
-        MySharedPtr<XMLNode> current = stack.peek();
-        if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
-        {
-            if (pred(current))
-            {
-                return current;
-            }
+	stack.push(_xmlDocument.root());
+	while (!stack.empty())
+	{
+		MySharedPtr<XMLNode> current = stack.peek();
+		if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
+		{
+			if (pred(current))
+			{
+				return current;
+			}
 
-            for (int i = currentChild->children().size() - 1; i >= 0; i--)
-            {
-                stack.push(currentChild->children()[i]);
-            }
-        }
-        stack.pop();
-    }
-    return nullptr;
+			for (int i = currentChild->children().size() - 1; i >= 0; i--)
+			{
+				stack.push(currentChild->children()[i]);
+			}
+		}
+		stack.pop();
+	}
+	return nullptr;
 }
 
 void XMLRepository::resolveIdConflicts()
 {
-    _xmlDocument.resolveIdConflicts();
+	_xmlDocument.resolveIdConflicts();
 }
 
 MyVector<MyString> XMLRepository::handleXPath(const MyString& query) const
 {
-    XPathQuery xPath;
-    return xPath.evaluate(_xmlDocument.root(), query);
+	XPathQuery xPath;
+	return xPath.evaluate(_xmlDocument.root(), query);
 }

@@ -125,6 +125,10 @@ T* MySharedPtr<T>::get() const
 template<typename T>
 T& MySharedPtr<T>::operator*() const
 {
+	if (!_ptr)
+	{
+		throw std::invalid_argument("Attempted to dereference a null pointer!");
+	}
 	return *get();
 }
 

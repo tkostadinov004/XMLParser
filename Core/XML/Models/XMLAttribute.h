@@ -22,10 +22,10 @@ public:
 	void setKey(const MyString& key);
 	void setValue(const MyString& value);
 
-	MySharedPtr<XMLNamespace> getNamespace() const;
+	const MySharedPtr<XMLNamespace>& getNamespace() const;
 	void assignNamespace(const MyString& namespaceName);
 
-	MyWeakPtr<XMLNode> getOwner() const;
+	const MyWeakPtr<XMLNode>& getOwner() const;
 	void setOwner(const MyWeakPtr<XMLNode>& node);
 
 	MyString toString() const;
