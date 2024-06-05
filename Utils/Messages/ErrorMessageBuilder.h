@@ -10,6 +10,10 @@ struct ErrorMessageBuilder
 	{
 		return "Unable to save to " + filename;
 	}
+	static MyString UNABLE_TO_OPEN_OR_CREATE_FILE()
+	{
+		return "Unable to open or create file!";
+	}
 	static MyString UNABLE_TO_FIND_NODE(const MyString& nodeId)
 	{
 		return "Unable to find node with id \"" + nodeId + "\"";

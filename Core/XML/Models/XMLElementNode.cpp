@@ -212,6 +212,22 @@ void XMLElementNode::addNamespaces(const MyVector<XMLNamespace>& namespaces)
 	}
 }
 
+void XMLElementNode::addNamespaces(const MyVector<MySharedPtr<XMLNamespace>>& namespaces)
+{
+	for (MySharedPtr<XMLNamespace>& ns : namespaces)
+	{
+		int index = _definedNamespaces.indexOf([&ns](const MySharedPtr<XMLNamespace>& internalNs) {return internalNs->getName() == ns->getName();});
+		if (index == -1)
+		{
+			_definedNamespaces.push_back(ns);
+		}
+		else
+		{
+			_definedNamespaces[index]->setValue(ns->getValue());
+		}
+	}
+}
+
 bool XMLElementNode::deleteAttribute(const MyString& attributeName)
 {
 	return _attributes.erase([attributeName](const XMLAttribute& attribute) {return attribute.getKey() == attributeName;});

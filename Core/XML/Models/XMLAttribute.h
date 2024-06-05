@@ -3,17 +3,17 @@
 #include "../../../Utils/MySharedPtr/MySharedPtr.hpp"
 #include "../../../Utils/MyWeakPtr/MyWeakPtr.hpp"
 #include "../Models/XMLNamespace.h"
-#include "XMLNode.h"
+class XMLElementNode;
 class XMLAttribute
 {
 	MyString _key;
 	MyString _value;
 	MySharedPtr<XMLNamespace> _namespace = nullptr;
-	MyWeakPtr<XMLNode> _owner;
+	MyWeakPtr<XMLElementNode> _owner;
 public:
 	XMLAttribute() = default;
 	XMLAttribute(const MyString& key, const MyString& value);
-	XMLAttribute(const MyString& key, const MyString& value, const MyString& namespaceName, MyWeakPtr<XMLNode> owner);
+	XMLAttribute(const MyString& key, const MyString& value, const MyString& namespaceName, const MyWeakPtr<XMLElementNode>& owner);
 	virtual ~XMLAttribute() = default;
 
 	const MyString& getKey() const;
@@ -25,8 +25,8 @@ public:
 	const MySharedPtr<XMLNamespace>& getNamespace() const;
 	void assignNamespace(const MyString& namespaceName);
 
-	const MyWeakPtr<XMLNode>& getOwner() const;
-	void setOwner(const MyWeakPtr<XMLNode>& node);
+	const MyWeakPtr<XMLElementNode>& getOwner() const;
+	void setOwner(const MyWeakPtr<XMLElementNode>& node);
 
 	MyString toString() const;
 };

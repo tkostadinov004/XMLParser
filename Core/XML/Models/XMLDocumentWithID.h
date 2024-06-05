@@ -10,7 +10,7 @@ class XMLDocumentWithID : public XMLDocument
 	GroupVector idGroups;
 	void setIdToElement(XMLElementNodeWithID* element);
 	void resolveIdConflicts(XMLElementNode* node);
-	MySharedPtr<XMLElementNode> convertNodeToWithID(MySharedPtr<XMLElementNode> src, MyWeakPtr<XMLElementNode> parent);
+	MySharedPtr<XMLElementNode> convertNodeToWithID(const MySharedPtr<XMLElementNode>& src, const MyWeakPtr<XMLElementNodeWithID>& parent);
 public:
 	void resolveIdConflicts();
 	XMLDocumentWithID() = default;

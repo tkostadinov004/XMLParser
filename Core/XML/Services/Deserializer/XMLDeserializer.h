@@ -19,8 +19,6 @@ enum class State
 class XMLDeserializer
 {
 	MyString _path;
-	XMLAttribute deserializeAttribute(const MyString& arg);
-	MyVector<XMLAttribute> deserializeAttributes(std::istream& is);
 public:
 	explicit XMLDeserializer(const MyString& path);
 	XMLDocument deserialize();

@@ -53,7 +53,7 @@ void MyWeakPtr<T>::moveFrom(MyWeakPtr&& other)
 template<typename T>
 void MyWeakPtr<T>::free()
 {
-	if (!_refCounter)
+	if (!_ptr && !_refCounter)
 	{
 		return;
 	}

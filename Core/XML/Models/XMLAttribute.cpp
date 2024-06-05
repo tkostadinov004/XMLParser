@@ -8,7 +8,7 @@ XMLAttribute::XMLAttribute(const MyString& key, const MyString& value)
     setValue(value);
 }
 
-XMLAttribute::XMLAttribute(const MyString& key, const MyString& value, const MyString& namespaceName, MyWeakPtr<XMLNode> owner) : XMLAttribute(key, value)
+XMLAttribute::XMLAttribute(const MyString& key, const MyString& value, const MyString& namespaceName, const MyWeakPtr<XMLElementNode>& owner) : XMLAttribute(key, value)
 {
     setOwner(owner);
     assignNamespace(namespaceName); 
@@ -76,12 +76,12 @@ void XMLAttribute::assignNamespace(const MyString& namespaceName)
     this->_namespace = obtained;
 }
 
-const MyWeakPtr<XMLNode>& XMLAttribute::getOwner() const
+const MyWeakPtr<XMLElementNode>& XMLAttribute::getOwner() const
 {
     return _owner;
 }
 
-void XMLAttribute::setOwner(const MyWeakPtr<XMLNode>& node)
+void XMLAttribute::setOwner(const MyWeakPtr<XMLElementNode>& node)
 {
     _owner = node;
 }

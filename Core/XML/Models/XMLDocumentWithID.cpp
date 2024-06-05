@@ -44,8 +44,27 @@ void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root)
 		resolveIdConflicts(elementChild);
 	}
 }
-
-MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(MySharedPtr<XMLElementNode> src, MyWeakPtr<XMLElementNode> parent)
+static MySharedPtr<XMLElementNodeWithID> copy(const MySharedPtr<XMLElementNode>& node, const MyWeakPtr<XMLElementNodeWithID>& parent)
+{
+	MySharedPtr<XMLElementNode> result = new XMLElementNodeWithID();
+	MyVector<MySharedPtr<XMLNamespace>> nss = node->definedNamespaces().convertTo<MySharedPtr<XMLNamespace>>([](const MySharedPtr<XMLNamespace>& ns) 
+		{
+			return new XMLNamespace(*ns);
+		});
+	result->setParent(parent);
+	result->addNamespaces(nss);
+	if (node->getNamespace())
+	{
+		result->assignNamespace(node->getNamespace()->getName());
+	}
+	result->setTagName(node->getTagName());
+	result->addAttributes(node->attributes().convertTo<XMLAttribute>([&result](const XMLAttribute& attr)
+	{
+			return XMLAttribute(attr.getKey(), attr.getValue(), (attr.getNamespace() ? attr.getNamespace()->getName() : ""), MyWeakPtr<XMLElementNode>(result));
+	}));
+	return result;
+}
+MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(const MySharedPtr<XMLElementNode>& src, const MyWeakPtr<XMLElementNodeWithID>& parent)
 {
 	if (!parent || !src)
 	{
@@ -58,11 +77,10 @@ MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(MySharedPtr<X
 		return dest;
 	}
 
-	MySharedPtr<XMLElementNode> dest = new XMLElementNodeWithID(*src);
-	dest->setParent(parent);
+	MySharedPtr<XMLElementNodeWithID> dest = copy(src, parent);
 	for (size_t i = 0; i < src->children().size(); i++)
 	{
-		dest->children()[i] = convertNodeToWithID(src->children()[i], dest);
+		dest->addChild(convertNodeToWithID(src->children()[i], dest));
 	}
 	return dest;
 }

@@ -3,12 +3,17 @@
 #include "../../../../Utils/Exceptions/FileError.h"
 #include "..\..\..\../Utils\MyStack\MyStack.hpp"
 #include "CoreFunctionality\XMLContext.h"
+#include "..\..\..\..\Utils\Messages\ErrorMessageBuilder.h"
 
 static bool isWhitespace(char c)
 {
 	return c == ' ' || c == '\n' || c == '\t' || c == '\f' || c == '\v' || c == '\r';
 }
-static bool isTerminator(char c)
+static bool isTagOpener(char c)
+{
+	return c == '<';
+}
+static bool isTagTerminator(char c)
 {
 	return c == '>';
 }
@@ -23,7 +28,7 @@ XMLDocument XMLDeserializer::deserialize()
 	std::ifstream ifs(_path.c_str(), std::ios::in | std::ios::out);
 	if (!ifs.is_open())
 	{
-		throw FileError("Unable to open or create file!");
+		throw FileError(ErrorMessageBuilder::UNABLE_TO_OPEN_OR_CREATE_FILE());
 	}
 
 	State state = State::Initial;
@@ -89,7 +94,7 @@ XMLDocument XMLDeserializer::deserialize()
 				state = State::CurrentlyReadingAttributes;
 				continue;
 			}
-			else if (isTerminator(c))
+			else if (isTagTerminator(c))
 			{
 				state = State::EndOfTag;
 				context.flushElementNode();
@@ -104,13 +109,10 @@ XMLDocument XMLDeserializer::deserialize()
 
 			context.flushElementNode();
 		}
-		else if ((state == State::EndOfTag || state == State::Initial))
+		else if ((state == State::EndOfTag || state == State::Initial) && !isWhitespace(c) && !isTagOpener(c) && !isTagTerminator(c))
 		{
-			if (!isWhitespace(c) && c != '<' && c != '>')
-			{
-				state = State::CurrentlyReadingPlainText;
-				ifs.seekg(-1, std::ios::cur);
-			}
+			state = State::CurrentlyReadingPlainText;
+			ifs.seekg(-1, std::ios::cur);
 		}
 		else if (state == State::CurrentlyReadingPlainText)
 		{
@@ -118,7 +120,7 @@ XMLDocument XMLDeserializer::deserialize()
 			context.flushTextNode();
 			state = State::EndOfPlainText;
 		}
-		else if (state == State::StartOfClosingTag && c != '<' && !isWhitespace(c))
+		else if (state == State::StartOfClosingTag && !isTagOpener(c) && !isWhitespace(c))
 		{
 			context.closeTag();
 			c = ifs.get();

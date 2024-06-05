@@ -35,6 +35,7 @@ public:
 	void addAttribute(const XMLAttribute& attribute);
 	void addAttributes(const MyVector<XMLAttribute>& attributes);
 	void addNamespaces(const MyVector<XMLNamespace>& namespaces);
+	void addNamespaces(const MyVector<MySharedPtr<XMLNamespace>>& namespaces);
 	void changeAttribute(const MyString& attributeName, const MyString& newValue);
 	bool deleteAttribute(const MyString& attributeName);
 	bool hasTextChild(const MyString& content) const;

@@ -24,20 +24,6 @@ void XMLRepository::saveAs(const MyString& path)
 	serializer.serializeToStream(_xmlDocument);
 }
 
-void XMLRepository::add(const XMLElementNodeWithID& item)
-{
-}
-
-bool XMLRepository::remove(const XMLElementNodeWithID& item)
-{
-	return false;
-}
-
-bool XMLRepository::remove(const MyString& id)
-{
-	return false;
-}
-
 MyString XMLRepository::getContents() const
 {
 	std::stringstream ss;
@@ -50,7 +36,7 @@ bool XMLRepository::isOpen() const
 	return _isOpen;
 }
 
-const MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(const MySharedPtr<XMLElementNodeWithID>)> pred) const
+const MySharedPtr<XMLElementNodeWithID>& XMLRepository::find(std::function<bool(const MySharedPtr<XMLElementNodeWithID>&)> pred) const
 {
 	MyStack<MySharedPtr<XMLNode>> stack;
 
@@ -58,7 +44,7 @@ const MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(c
 	while (!stack.empty())
 	{
 		const MySharedPtr<XMLNode> current = stack.peek();
-		if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
+		if (const XMLElementNodeWithID* currentChild = dynamic_cast<const XMLElementNodeWithID*>(current.get()))
 		{
 			if (pred(current))
 			{

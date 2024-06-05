@@ -9,13 +9,16 @@ class MySharedPtr
 	T* _ptr = nullptr;
 	Counter* _refCounter = nullptr;
 	void copyFrom(const MySharedPtr& other);
+	void moveFrom(MySharedPtr&& other);
 	void free();
 	MySharedPtr(T* ptr, Counter* counter);
 public:
 	MySharedPtr(T* ptr = nullptr);
 	~MySharedPtr();
 	MySharedPtr(const MySharedPtr& other);
+	MySharedPtr(MySharedPtr&& other) noexcept;
 	MySharedPtr& operator=(const MySharedPtr& other);
+	MySharedPtr& operator=(MySharedPtr&& other) noexcept;
 	T* get() const;
 	T& operator*() const;
 	T* operator->() const;
@@ -27,6 +30,10 @@ public:
 
 	template<typename U> friend class MySharedPtr;
 };
+template <typename T>
+bool operator==(const MySharedPtr<T>& lhs, const MySharedPtr<T>& rhs);
+template <typename T>
+bool operator!=(const MySharedPtr<T>& lhs, const MySharedPtr<T>& rhs);
 
 template<typename T>
 void MySharedPtr<T>::copyFrom(const MySharedPtr& other)
@@ -37,6 +44,15 @@ void MySharedPtr<T>::copyFrom(const MySharedPtr& other)
 	{
 		_refCounter->addSharedPointer();
 	}
+}
+
+template<typename T>
+void MySharedPtr<T>::moveFrom(MySharedPtr&& other)
+{
+	_ptr = other._ptr;
+	other._ptr = nullptr;
+	_refCounter = other._refCounter;
+	other._refCounter = nullptr;
 }
 
 template<typename T>
@@ -94,6 +110,12 @@ MySharedPtr<T>::MySharedPtr(const MySharedPtr& other)
 }
 
 template<typename T>
+MySharedPtr<T>::MySharedPtr(MySharedPtr&& other) noexcept
+{
+	moveFrom(std::move(other));
+}
+
+template<typename T>
 template<typename U>
 MySharedPtr<T>::MySharedPtr(const MySharedPtr<U>& other)
 {
@@ -112,6 +134,17 @@ MySharedPtr<T>& MySharedPtr<T>::operator=(const MySharedPtr& other)
 	{
 		free();
 		copyFrom(other);
+	}
+	return *this;
+}
+
+template<typename T>
+MySharedPtr<T>& MySharedPtr<T>::operator=(MySharedPtr&& other) noexcept
+{
+	if (this != &other)
+	{
+		free();
+		moveFrom(std::move(other));
 	}
 	return *this;
 }
@@ -147,4 +180,16 @@ template<typename T>
 MySharedPtr<T>::operator bool() const
 {
 	return _ptr != nullptr;
+}
+
+template<typename T>
+bool operator==(const MySharedPtr<T>& lhs, const MySharedPtr<T>& rhs)
+{
+	return lhs.get() == rhs.get();
+}
+
+template<typename T>
+bool operator!=(const MySharedPtr<T>& lhs, const MySharedPtr<T>& rhs)
+{
+	return lhs.get() != rhs.get();
 }
