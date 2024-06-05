@@ -11,7 +11,6 @@
 #include "Commands/SaveCommand.h"
 #include "Commands/SelectCommand.h"
 #include "Commands/SetCommand.h"
-#include "Commands/SetCommand.h"
 #include "Commands/TextCommand.h"
 #include "Commands/XPathCommand.h"
 

@@ -33,7 +33,7 @@ void XMLController::save()
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 	_repository.saveAs(_currentFilePath);
 
@@ -44,7 +44,7 @@ void XMLController::saveAs(const MyString& path)
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 	_repository.saveAs(path);
 
@@ -60,7 +60,7 @@ void XMLController::print() const
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 	std::cout << _repository.getContents() << std::endl;
 }
@@ -69,7 +69,7 @@ void XMLController::selectAttribute(const MyString& nodeId, const MyString& attr
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
 	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
@@ -91,7 +91,7 @@ void XMLController::changeAttributeValue(const MyString& nodeId, const MyString&
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
 	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
@@ -114,13 +114,15 @@ void XMLController::changeAttributeValue(const MyString& nodeId, const MyString&
 			_repository.resolveIdConflicts();
 		}
 	}
+
+	std::cout << OutputMessageBuilder::SUCCESSFULLY_CHANGED_ATTRIBUTE(attributeName, newValue);
 }
 
 void XMLController::printChildrenOfNode(const MyString& nodeId) const
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
 	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
@@ -160,7 +162,7 @@ void XMLController::printNthChild(const MyString& nodeId, int childIndex) const
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
 	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
@@ -173,14 +175,15 @@ void XMLController::printNthChild(const MyString& nodeId, int childIndex) const
 	{
 		throw XMLException(ErrorMessageBuilder::INVALID_INDEX());
 	}
-	std::cout << selectedNode->children()[childIndex] << std::endl;
+	selectedNode->children()[childIndex]->print(std::cout);
+	std::cout << std::endl;
 }
 
 void XMLController::printInnerText(const MyString& nodeId) const
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
 	const MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](const MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
@@ -190,14 +193,14 @@ void XMLController::printInnerText(const MyString& nodeId) const
 	}
 
 	std::cout << "Text of node with id: " << nodeId << std::endl;
-	MyStack<MySharedPtr<XMLNode>> stack;
+	MyStack<const XMLNode*> stack;
 
-	stack.push(selectedNode);
+	stack.push(selectedNode.get());
 	while (!stack.empty())
 	{
-		MySharedPtr<XMLNode> current = stack.peek();
+		const XMLNode* current = stack.peek();
 		stack.pop();
-		if (const MySharedPtr<XMLElementNodeWithID> nodeWithChildren = current)
+		if (const XMLElementNodeWithID* nodeWithChildren = dynamic_cast<const XMLElementNodeWithID*>(current))
 		{
 			for (int i = nodeWithChildren->children().size() - 1; i >= 0; i--)
 			{
@@ -217,7 +220,7 @@ void XMLController::deleteAttribute(const MyString& nodeId, const MyString& attr
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
 	if (attributeName == "id")
@@ -232,38 +235,53 @@ void XMLController::deleteAttribute(const MyString& nodeId, const MyString& attr
 	}
 
 	bool isDeleted = selectedNode->deleteAttribute(attributeName);
-	if (isDeleted)
+	if (!isDeleted)
 	{
-		std::cout << "Successfully deleted attribute with name \"" + attributeName + "\" from node with id \"" + nodeId + "\"" << std::endl;
+		throw XMLException(ErrorMessageBuilder::ATTRIBUTE_NOT_FOUND(attributeName, nodeId));
 	}
-	else
-	{
-		std::cout << "Attribute with name \"" + attributeName + "\" is not found in the node with id \"" + nodeId + "\"" << std::endl;
-	}
+
+	std::cout << OutputMessageBuilder::SUCCESSFULLY_DELETED_ATTRIBUTE(attributeName, nodeId);
 }
 
-void XMLController::addChild(const MyString& nodeId)
+void XMLController::addChild(const MyString& nodeId, const MyString& newChildName)
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
-	MySharedPtr<XMLElementNodeWithID> selectedNode = _repository.find([nodeId](MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
+	MySharedPtr<XMLElementNode> selectedNode = _repository.find([nodeId](MySharedPtr<XMLElementNodeWithID> node) {return node->getId() == nodeId;});
 	if (!selectedNode)
 	{
 		throw XMLException(ErrorMessageBuilder::UNABLE_TO_FIND_NODE(nodeId));
 	}
+	MySharedPtr<XMLNode> conv = selectedNode;
+	MyWeakPtr<XMLNode> parent = conv;
+	XMLElementNodeWithID result;
+	result.setParent(parent);
 
-	selectedNode->addChild(XMLElementNodeWithID());
+	int nsIndex = newChildName.find(":");
+	if (nsIndex != -1)
+	{
+		result.assignNamespace(newChildName.substr(0, nsIndex));
+		result.setTagName(newChildName.substr(nsIndex + 1));
+	}
+	else
+	{
+		result.setTagName(newChildName);
+	}
+
+	selectedNode->addChild(result);
 	_repository.resolveIdConflicts();
+
+	std::cout << OutputMessageBuilder::SUCCESSFULLY_ADDED_CHILD(newChildName, nodeId);
 }
 
 void XMLController::handleXPath(const MyString& query) const
 {
 	if (!_repository.isOpen())
 	{
-		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
+		throw FileError(ErrorMessageBuilder::NO_FILE_OPENED());
 	}
 
 	XPathQueryResultSerializer serializer;

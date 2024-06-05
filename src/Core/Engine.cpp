@@ -20,10 +20,13 @@ static MyVector<MyString> splitCommandLine(const MyString& str)
 				current.clear();
 			}
 		}
-		else if (str[i] == ' ' && !isInQuotes && !current.empty())
+		else if (str[i] == ' ' && !isInQuotes)
 		{
-			result.push_back(current);
-			current.clear();
+			if (!current.empty())
+			{
+				result.push_back(current);
+				current.clear();
+			}			
 		}
 		else
 		{

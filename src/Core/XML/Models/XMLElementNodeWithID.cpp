@@ -1,6 +1,10 @@
 #include "XMLElementNodeWithID.h"
 #include "XMLTextNode.h"
 
+XMLElementNodeWithID::XMLElementNodeWithID(const MyString& tagName)
+{
+	setTagName(tagName);
+}
 
 MySharedPtr<XMLNode> XMLElementNodeWithID::clone() const
 {

@@ -9,17 +9,17 @@ void XMLDocumentWithID::setIdToElement(XMLElementNodeWithID* element)
 	{
 		const MyString& id = idAttribute->getValue();
 		resultId = id;
-		idGroups.add(resultId);
-		if (idGroups[id] > 1)
+		_idGroups.add(resultId);
+		if (_idGroups[id] > 1)
 		{
-			resultId += "_" + toString(idGroups[id]++);
+			resultId += "_" + toString(_idGroups[id]++);
 		}
 		idAttribute->setValue(resultId);
 	}
 	else
 	{
-		resultId = "auto_" + toString(++generated);
-		idGroups.add(resultId);
+		resultId = "auto_" + toString(++_generated);
+		_idGroups.add(resultId);
 		element->addAttribute(XMLAttribute("id", resultId));
 	}
 
@@ -64,7 +64,7 @@ static MySharedPtr<XMLElementNodeWithID> copy(const MySharedPtr<XMLElementNode>&
 	}));
 	return result;
 }
-MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(const MySharedPtr<XMLElementNode>& src, const MyWeakPtr<XMLElementNodeWithID>& parent)
+MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(MySharedPtr<XMLElementNode> src, MyWeakPtr<XMLElementNodeWithID> parent)
 {
 	if (!parent || !src)
 	{
@@ -80,7 +80,8 @@ MySharedPtr<XMLElementNode> XMLDocumentWithID::convertNodeToWithID(const MyShare
 	MySharedPtr<XMLElementNodeWithID> dest = copy(src, parent);
 	for (size_t i = 0; i < src->children().size(); i++)
 	{
-		dest->addChild(convertNodeToWithID(src->children()[i], dest));
+		MySharedPtr<XMLElementNodeWithID> child = convertNodeToWithID(src->children()[i], dest);
+		dest->addChild(child);
 	}
 	return dest;
 }
@@ -104,7 +105,16 @@ XMLDocumentWithID::XMLDocumentWithID(const XMLDocument& xml)
 	resolveIdConflicts();
 }
 
+void XMLDocumentWithID::clearIdGroups()
+{
+	_idGroups.clear();
+}
+
 std::ostream& operator<<(std::ostream& os, const XMLDocumentWithID& doc)
 {
+	if (!doc.root())
+	{
+		return os << "File is empty";
+	}
 	return doc.root()->print(os);
 }

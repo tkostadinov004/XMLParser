@@ -44,6 +44,7 @@ const MySharedPtr<XMLElementNodeWithID>& XMLRepository::find(std::function<bool(
 	while (!stack.empty())
 	{
 		const MySharedPtr<XMLNode> current = stack.peek();
+		stack.pop();
 		if (const XMLElementNodeWithID* currentChild = dynamic_cast<const XMLElementNodeWithID*>(current.get()))
 		{
 			if (pred(current))
@@ -56,7 +57,6 @@ const MySharedPtr<XMLElementNodeWithID>& XMLRepository::find(std::function<bool(
 				stack.push(currentChild->children()[i]);
 			}
 		}
-		stack.pop();
 	}
 	return nullptr;
 }
@@ -69,6 +69,7 @@ MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(MyShare
 	while (!stack.empty())
 	{
 		MySharedPtr<XMLNode> current = stack.peek();
+		stack.pop();
 		if (XMLElementNodeWithID* currentChild = dynamic_cast<XMLElementNodeWithID*>(current.get()))
 		{
 			if (pred(current))
@@ -81,13 +82,13 @@ MySharedPtr<XMLElementNodeWithID> XMLRepository::find(std::function<bool(MyShare
 				stack.push(currentChild->children()[i]);
 			}
 		}
-		stack.pop();
 	}
 	return nullptr;
 }
 
 void XMLRepository::resolveIdConflicts()
 {
+	_xmlDocument.clearIdGroups();
 	_xmlDocument.resolveIdConflicts();
 }
 

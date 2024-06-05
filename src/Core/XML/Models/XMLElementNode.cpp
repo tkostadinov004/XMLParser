@@ -23,7 +23,7 @@ std::ostream& XMLElementNode::print(std::ostream& os, int indent) const
 		return os << "/>";
 	}
 	os << ">";
-	if (_children.size() == 1)
+	if (_children.size() == 1 && dynamic_cast<const XMLTextNode*>(_children.back().get()))
 	{
 		_children.back()->print(os);
 		os << "</" << (this->_namespace ? this->_namespace->getName() + ":" : "") << tag << ">";
@@ -189,7 +189,7 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 
 void XMLElementNode::changeAttribute(const MyString& attributeName, const MyString& newValue)
 {
-	if (MySharedPtr<XMLAttribute> attribute = _attributes[attributeName])
+	if (XMLAttribute* attribute = _attributes[attributeName])
 	{
 		attribute->setValue(newValue);
 	}

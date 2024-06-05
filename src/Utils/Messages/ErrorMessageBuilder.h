@@ -14,6 +14,14 @@ struct ErrorMessageBuilder
 	{
 		return "Unable to open or create file!";
 	}
+	static MyString NO_FILE_OPENED_FOR_SAVING()
+	{
+		return "No files are opened for saving";
+	}
+	static MyString NO_FILE_OPENED()
+	{
+		return "No files are opened";
+	}
 	static MyString UNABLE_TO_FIND_NODE(const MyString& nodeId)
 	{
 		return "Unable to find node with id \"" + nodeId + "\"";
@@ -25,6 +33,10 @@ struct ErrorMessageBuilder
 	static MyString INSUFFICIENT_ARGUMENTS_FOR(const MyString& commandName)
 	{
 		return "Insufficient arguments for \"" + commandName + "\"!";
+	}
+	static MyString ATTRIBUTE_NOT_FOUND(const MyString& attributeName, const MyString& nodeId)
+	{
+		return "Attribute with name \"" + attributeName + "\" is not found in the node with id \"" + nodeId + "\"";
 	}
 	static const char* INVALID_INDEX()
 	{

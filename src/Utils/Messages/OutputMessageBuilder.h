@@ -18,12 +18,20 @@ struct OutputMessageBuilder
 	{
 		return "Successfully closed " + filename;
 	}
-	static MyString NO_FILE_OPENED_FOR_SAVING()
-	{
-		return "No files are opened for saving";
-	}
 	static MyString SUCCESSFULLY_SAVED_FILE(const MyString& filename)
 	{
 		return "Successfully saved " + filename;
+	}
+	static MyString SUCCESSFULLY_CHANGED_ATTRIBUTE(const MyString& attributeName, const MyString& newValue)
+	{
+		return "Successfully changed the value of " + attributeName + " to " + newValue;
+	}
+	static MyString SUCCESSFULLY_DELETED_ATTRIBUTE(const MyString& attributeName, const MyString& nodeId)
+	{
+		return "Successfully deleted attribute with name \"" + attributeName + "\" from node with id \"" + nodeId + "\"";
+	}
+	static MyString SUCCESSFULLY_ADDED_CHILD(const MyString& newChildName, const MyString& nodeId)
+	{
+		return "Successfully added child with name \"" + newChildName + "\" to node with id \"" + nodeId + "\"";
 	}
 };
