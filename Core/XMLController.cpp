@@ -1,6 +1,7 @@
 #include "XMLController.h"
 #include "..\Utils\Exceptions\FileError.h"
 #include "XML\Exceptions\XMLException.h"
+#include "XPath\ResultSerializers\XPathQueryResultSerializer.h"
 
 void XMLController::openFile(const MyString& path)
 {
@@ -265,5 +266,6 @@ void XMLController::handleXPath(const MyString& query) const
 		throw FileError(OutputMessageBuilder::NO_FILE_OPENED_FOR_SAVING());
 	}
 
-	std::cout << "[" << join(_repository.handleXPath(query), ", ") << "]" << std::endl;
+	XPathQueryResultSerializer serializer;
+	std::cout << serializer.serializeResult(_repository.handleXPath(query));
 }

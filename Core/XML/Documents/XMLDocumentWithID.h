@@ -2,7 +2,6 @@
 #include "XMLDocument.h"
 #include "../../../Utils/GroupVector/GroupVector.h"
 #include "../Models/XMLElementNodeWithID.h"
-#include "XMLElementNodeWithID.h"
 
 class XMLDocumentWithID : public XMLDocument
 {

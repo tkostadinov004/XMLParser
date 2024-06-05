@@ -2,7 +2,7 @@
 #include "../Models/XMLElementNode.h"
 #include "../../../Utils/MyString/MyString.h"
 #include "..\Models\XMLElementNodeWithID.h"
-#include "..\Models\XMLDocumentWithID.h"
+#include "..\Documents\XMLDocumentWithID.h"
 #include "../../../Utils/MyStack/MyStack.hpp"
 
 class XMLRepository
@@ -20,5 +20,5 @@ public:
 	const MySharedPtr<XMLElementNodeWithID>& find(std::function<bool(const MySharedPtr<XMLElementNodeWithID>&)> pred) const;
 	MySharedPtr<XMLElementNodeWithID> find(std::function<bool(MySharedPtr<XMLElementNodeWithID>)> pred);
 	void resolveIdConflicts();
-	MyVector<MyString> handleXPath(const MyString& query) const;
+	MyVector<const XMLNode*> handleXPath(const MyString& query) const;
 };

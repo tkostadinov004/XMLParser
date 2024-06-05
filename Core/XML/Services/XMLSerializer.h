@@ -1,6 +1,6 @@
 #pragma once
 #include "..\..\..\Utils\MyString\MyString.h"
-#include "..\Models\XMLDocument.h"
+#include "..\Documents\XMLDocument.h"
 
 class XMLSerializer
 {

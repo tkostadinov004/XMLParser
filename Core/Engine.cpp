@@ -129,6 +129,12 @@ void Engine::handleCommandLine(const MyVector<MyString>& commandLine)
 	}
 }
 
+Engine& Engine::getInstance()
+{
+	static Engine engine;
+	return engine;
+}
+
 void Engine::run()
 {
 	MyString input;

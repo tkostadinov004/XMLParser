@@ -68,7 +68,7 @@ void XMLAttribute::assignNamespace(const MyString& namespaceName)
     }
 
     MyWeakPtr<XMLElementNode> owner = _owner;
-    MySharedPtr<XMLNamespace> obtained = owner->getDefinedNamespaceByName(namespaceName);
+    MySharedPtr<XMLNamespace> obtained = owner->getNamespaceInScopeByName(namespaceName);
     if (!obtained)
     {
         throw std::exception(MyString("Namespace \"" + namespaceName + "\" is not defined!").c_str());

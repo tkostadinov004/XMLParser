@@ -1,6 +1,6 @@
 #include "XMLDocumentWithID.h"
 #include "..\..\..\Utils\MyStack\MyStack.hpp"
-#include "XMLTextNode.h"
+#include "../Models/XMLTextNode.h"
 
 void XMLDocumentWithID::setIdToElement(XMLElementNodeWithID* element)
 {
@@ -47,7 +47,7 @@ void XMLDocumentWithID::resolveIdConflicts(XMLElementNode* root)
 static MySharedPtr<XMLElementNodeWithID> copy(const MySharedPtr<XMLElementNode>& node, const MyWeakPtr<XMLElementNodeWithID>& parent)
 {
 	MySharedPtr<XMLElementNode> result = new XMLElementNodeWithID();
-	MyVector<MySharedPtr<XMLNamespace>> nss = node->definedNamespaces().convertTo<MySharedPtr<XMLNamespace>>([](const MySharedPtr<XMLNamespace>& ns) 
+	MyVector<MySharedPtr<XMLNamespace>> nss = node->getNamespacesInScope().convertTo<MySharedPtr<XMLNamespace>>([](const MySharedPtr<XMLNamespace>& ns) 
 		{
 			return new XMLNamespace(*ns);
 		});

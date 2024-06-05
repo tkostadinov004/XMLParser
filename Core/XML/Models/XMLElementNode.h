@@ -5,7 +5,7 @@
 #include "XMLNamespace.h"
 #include "XMLNode.h"
 #include "..\..\..\Utils\MySharedPtr\MySharedPtr.hpp"
-#include "XMLAttributeCollection.h"
+#include "../Collections/XMLAttributeCollection.h"
 
 class XMLElementNode : public XMLNode
 {
@@ -14,7 +14,7 @@ protected:
 	MyString _tagName;
 	XMLAttributeCollection _attributes;
 	MyVector<MySharedPtr<XMLNode>> _children;
-	MyVector<MySharedPtr<XMLNamespace>> _definedNamespaces;
+	MyVector<MySharedPtr<XMLNamespace>> _namespacesInScope;
 public:
 	XMLElementNode() = default;
 	explicit XMLElementNode(const MyString& tagName);
@@ -27,8 +27,8 @@ public:
 	MyVector<MySharedPtr<XMLNode>>& children();
 	MyVector<MySharedPtr<const XMLNode>> getDescendants() const;
 	MyVector<MyWeakPtr<XMLElementNode>> getAncestors() const;
-	const MyVector<MySharedPtr<XMLNamespace>>& definedNamespaces() const;
-	const MySharedPtr<XMLNamespace>& getDefinedNamespaceByName(const MyString& nsName) const;
+	const MyVector<MySharedPtr<XMLNamespace>>& getNamespacesInScope() const;
+	const MySharedPtr<XMLNamespace>& getNamespaceInScopeByName(const MyString& nsName) const;
 
 	void setTagName(const MyString& tagName);
 	void assignNamespace(const MyString& namespaceName);

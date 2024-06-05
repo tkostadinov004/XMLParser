@@ -1,6 +1,6 @@
 #pragma once
 #include <ostream>
-#include "XMLElementNode.h"
+#include "../Models/XMLElementNode.h"
 
 class XMLDocument
 {

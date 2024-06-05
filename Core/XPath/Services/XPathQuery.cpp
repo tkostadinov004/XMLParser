@@ -2,8 +2,9 @@
 #include "..\..\XML\Models\XMLTextNode.h"
 #include "..\QueryParser\XPathQueryDeserializer.h"
 #include "XPathSelectorFactory.h"
+#include "..\ResultSerializers\XPathQueryResultSerializer.h"
 
-MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, const MyString& queryString)
+MyVector<const XMLNode*> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, const MyString& queryString)
 {
 	MyVector<const XMLNode*> result;
 	result.push_back(root.get());
@@ -17,8 +18,5 @@ MyVector<MyString> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, 
 		result = factory.create()->execute(result, currentComponent);
 	}
 
-	return result.convertTo<MyString>([](const XMLNode* node)
-		{
-			return MyString("\"" + node->textContent() + "\"");
-		});
+	return result;
 }

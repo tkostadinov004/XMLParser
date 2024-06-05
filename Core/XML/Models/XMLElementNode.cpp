@@ -1,6 +1,5 @@
-#include "XMLElementNode.h"
-#include "XMLDocument.h"
 #include <iomanip>
+#include "XMLElementNode.h"
 #include "XMLTextNode.h"
 #include "..\..\..\Utils\MyStack\MyStack.hpp"
 
@@ -128,14 +127,14 @@ MyVector<MyWeakPtr<XMLElementNode>> XMLElementNode::getAncestors() const
 	return result;
 }
 
-const MyVector<MySharedPtr<XMLNamespace>>& XMLElementNode::definedNamespaces() const
+const MyVector<MySharedPtr<XMLNamespace>>& XMLElementNode::getNamespacesInScope() const
 {
-	return _definedNamespaces;
+	return _namespacesInScope;
 }
 
-const MySharedPtr<XMLNamespace>& XMLElementNode::getDefinedNamespaceByName(const MyString& nsName) const
+const MySharedPtr<XMLNamespace>& XMLElementNode::getNamespaceInScopeByName(const MyString& nsName) const
 {
-	for (const MySharedPtr<XMLNamespace>& ns : _definedNamespaces)
+	for (const MySharedPtr<XMLNamespace>& ns : _namespacesInScope)
 	{
 		if (ns->getName() == nsName)
 		{
@@ -146,7 +145,7 @@ const MySharedPtr<XMLNamespace>& XMLElementNode::getDefinedNamespaceByName(const
 	MyWeakPtr<XMLElementNode> ptr = this->parent();
 	if (ptr)
 	{
-		return ptr->getDefinedNamespaceByName(nsName);
+		return ptr->getNamespaceInScopeByName(nsName);
 	}
 	return nullptr;
 }
@@ -158,7 +157,7 @@ void XMLElementNode::setTagName(const MyString& tagName)
 
 void XMLElementNode::assignNamespace(const MyString& namespaceName)
 {
-	MySharedPtr<XMLNamespace> obtained = getDefinedNamespaceByName(namespaceName);
+	MySharedPtr<XMLNamespace> obtained = getNamespaceInScopeByName(namespaceName);
 	if (!obtained)
 	{
 		throw std::exception(MyString("Namespace \"" + namespaceName + "\" is not defined!").c_str());
@@ -179,9 +178,9 @@ void XMLElementNode::addAttributes(const MyVector<XMLAttribute>& attributes)
 		if (attribute.getKey().starts_with("xmlns"))
 		{
 			MyString nsName = attribute.getKey().split(':')[1];
-			if (!_definedNamespaces.any([nsName](const MySharedPtr<XMLNamespace>& ns) {return nsName == ns->getName();}))
+			if (!_namespacesInScope.any([nsName](const MySharedPtr<XMLNamespace>& ns) {return nsName == ns->getName();}))
 			{
-				_definedNamespaces.push_back(new XMLNamespace(nsName, attribute.getValue()));
+				_namespacesInScope.push_back(new XMLNamespace(nsName, attribute.getValue()));
 			}
 		}
 		addAttribute(attribute);
@@ -200,14 +199,14 @@ void XMLElementNode::addNamespaces(const MyVector<XMLNamespace>& namespaces)
 {
 	for (const XMLNamespace& ns : namespaces)
 	{
-		int index = _definedNamespaces.indexOf([&ns](const MySharedPtr<XMLNamespace>& internalNs) {return internalNs->getName() == ns.getName();});
+		int index = _namespacesInScope.indexOf([&ns](const MySharedPtr<XMLNamespace>& internalNs) {return internalNs->getName() == ns.getName();});
 		if (index == -1)
 		{
-			_definedNamespaces.push_back(new XMLNamespace(ns));
+			_namespacesInScope.push_back(new XMLNamespace(ns));
 		}
 		else
 		{
-			_definedNamespaces[index]->setValue(ns.getValue());
+			_namespacesInScope[index]->setValue(ns.getValue());
 		}
 	}
 }
@@ -216,14 +215,14 @@ void XMLElementNode::addNamespaces(const MyVector<MySharedPtr<XMLNamespace>>& na
 {
 	for (MySharedPtr<XMLNamespace>& ns : namespaces)
 	{
-		int index = _definedNamespaces.indexOf([&ns](const MySharedPtr<XMLNamespace>& internalNs) {return internalNs->getName() == ns->getName();});
+		int index = _namespacesInScope.indexOf([&ns](const MySharedPtr<XMLNamespace>& internalNs) {return internalNs->getName() == ns->getName();});
 		if (index == -1)
 		{
-			_definedNamespaces.push_back(ns);
+			_namespacesInScope.push_back(ns);
 		}
 		else
 		{
-			_definedNamespaces[index]->setValue(ns->getValue());
+			_namespacesInScope[index]->setValue(ns->getValue());
 		}
 	}
 }

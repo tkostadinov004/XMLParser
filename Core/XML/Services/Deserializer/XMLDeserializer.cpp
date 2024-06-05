@@ -2,7 +2,7 @@
 #include "../../Models/XMLTextNode.h"
 #include "../../../../Utils/Exceptions/FileError.h"
 #include "..\..\..\../Utils\MyStack\MyStack.hpp"
-#include "CoreFunctionality\XMLContext.h"
+#include "CoreFunctionality\XMLBuildingContext.h"
 #include "..\..\..\..\Utils\Messages\ErrorMessageBuilder.h"
 
 static bool isWhitespace(char c)
@@ -34,7 +34,7 @@ XMLDocument XMLDeserializer::deserialize()
 	State state = State::Initial;
 
 	DataReader reader(ifs);
-	XMLContext context(reader);
+	XMLBuildingContext context(reader);
 	while (ifs.peek() && !ifs.eof())
 	{
 		char c = ifs.get();

@@ -1,6 +1,6 @@
-#include "XMLContext.h"
+#include "XMLBuildingContext.h"
 
-XMLDocument XMLContext::finish() const
+XMLDocument XMLBuildingContext::finish() const
 {
 	if (!_tags.empty())
 	{
@@ -10,11 +10,11 @@ XMLDocument XMLContext::finish() const
     return XMLDocument(_resultRoot);
 }
 
-XMLContext::XMLContext(DataReader& reader) : _elementNodeBuilder(reader), _textNodeBuilder(reader)
+XMLBuildingContext::XMLBuildingContext(DataReader& reader) : _elementNodeBuilder(reader), _textNodeBuilder(reader)
 {
 }
 
-void XMLContext::createTag()
+void XMLBuildingContext::createTag()
 {
 	_elementNodeBuilder.buildTagName();
 	if (_elementNodeBuilder.getTagStatus() == TagStatus::Open)
@@ -23,7 +23,7 @@ void XMLContext::createTag()
 	}
 }
 
-void XMLContext::createAttributes()
+void XMLBuildingContext::createAttributes()
 {
 	_elementNodeBuilder.buildAttributes();
 	if (_elementNodeBuilder.getTagStatus() == TagStatus::SelfClosing)
@@ -32,7 +32,7 @@ void XMLContext::createAttributes()
 	}
 }
 
-void XMLContext::flushElementNode()
+void XMLBuildingContext::flushElementNode()
 {
 	TagStatus tagStatus = _elementNodeBuilder.getTagStatus();
 	MySharedPtr<XMLElementNode> flushedNode = _elementNodeBuilder.flush(_previousParent);
@@ -46,12 +46,12 @@ void XMLContext::flushElementNode()
 	}
 }
 
-void XMLContext::flushTextNode()
+void XMLBuildingContext::flushTextNode()
 {
 	_textNodeBuilder.flush(_previousParent);
 }
 
-void XMLContext::closeTag()
+void XMLBuildingContext::closeTag()
 {
 	MyString closingTag = _elementNodeBuilder.getClosingTagForValidation();
 	if (closingTag != _tags.peek())
@@ -63,7 +63,7 @@ void XMLContext::closeTag()
 	_previousParent = _previousParent->parent();
 }
 
-void XMLContext::createPlainText()
+void XMLBuildingContext::createPlainText()
 {
 	_textNodeBuilder.buildContent();
 }

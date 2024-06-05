@@ -3,8 +3,8 @@
 #include "../../../../../Utils/MyStack/MyStack.hpp"
 #include "..\../../Models\XMLTextNode.h"
 #include "Builders/XMLTextNodeBuilder.h"
-#include "..\..\..\Models\XMLDocument.h"
-class XMLContext
+#include "..\..\..\Documents\XMLDocument.h"
+class XMLBuildingContext
 {
 	XMLElementNodeBuilder _elementNodeBuilder;
 	XMLTextNodeBuilder _textNodeBuilder;
@@ -12,7 +12,7 @@ class XMLContext
 	MySharedPtr<XMLElementNode> _resultRoot = nullptr;
 	MyWeakPtr<XMLElementNode> _previousParent = _resultRoot;
 public:
-	explicit XMLContext(DataReader& reader);
+	explicit XMLBuildingContext(DataReader& reader);
 	void createTag();
 	void createAttributes();
 	void createPlainText();

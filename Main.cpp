@@ -2,6 +2,6 @@
 
 int main()
 {
-	Engine engine;
+	Engine& engine = Engine::getInstance();
 	engine.run();
 }

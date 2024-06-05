@@ -92,6 +92,7 @@ XPathQueryComponent XPathQueryDeserializer::parseComponent(const MyString& compo
 }
 
 XPathQueryDeserializer::XPathQueryDeserializer(const MyString& queryString) : _reader(queryString) {}
+
 MyVector<XPathQueryComponent> XPathQueryDeserializer::deserialize() const
 {
 	return _reader.read().convertTo<XPathQueryComponent>([this](const MyString& componentString)

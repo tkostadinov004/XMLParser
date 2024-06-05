@@ -91,7 +91,7 @@ void XMLRepository::resolveIdConflicts()
 	_xmlDocument.resolveIdConflicts();
 }
 
-MyVector<MyString> XMLRepository::handleXPath(const MyString& query) const
+MyVector<const XMLNode*> XMLRepository::handleXPath(const MyString& query) const
 {
 	XPathQuery xPath;
 	return xPath.evaluate(_xmlDocument.root(), query);
