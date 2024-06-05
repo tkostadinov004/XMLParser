@@ -53,7 +53,22 @@ void XMLController::saveAs(const MyString& path)
 
 void XMLController::help() const
 {
-	std::cout << "The following commands are supported:\nopen <file>\t\topens <file>\nclose\t\tcloses currently opened file\nsave\t\tsaves the currently open file\nsaveas <file>\t\tsaves the currently open file in <file>\nhelp\t\tprints this information\nexit\t\texists the program" << std::endl;
+	std::cout << "The following commands are supported:\n";
+	std::cout << "open <file>\t\t\t\topens <file>\n";
+	std::cout << "close\t\t\t\tcloses currently opened file\n";
+	std::cout << "save\t\t\t\tsaves the currently open file\n";
+	std::cout << "saveas <file>\t\t\t\tsaves the currently open file in <file>\n";
+	std::cout << "help\t\t\t\tprints this information menu\n";
+	std::cout << "exit\t\t\t\texists the program\n";
+	std::cout << "print\t\t\t\t prints the deserialized data from a file that you've opened\n";
+	std::cout << "select \"id\" \"attributeName\"\t\t\t\t prints the value of an attribute by a given id of a node and an attribute name\n";
+	std::cout << "set \"id\" \"attributeName\" \"newValue\"\t\t\t\t changes the value of an attribute of a given node\n";
+	std::cout << "children \"id\"\t\t\t\t prints a list of the children of a given node\n";
+	std::cout << "child \"id\" \"n\" \t\t\t\t prints the n-th child of a given node\n";
+	std::cout << "text \"id\" \t\t\t\t prints the inner text of a given node\n";
+	std::cout << "delete \"id\" \"attributeName\"\t\t\t\t deletes an attribute of a given node\n";
+	std::cout << "newChild \"id\" \"tagName\"\t\t\t\t adds a new child node to a given node\n";
+	std::cout << "xpath \"query\" \t\t\t\t performs simple XPath queries\n";
 }
 
 void XMLController::print() const
