@@ -1,7 +1,7 @@
 #include "XMLController.h"
-#include "..\Utils\Exceptions\FileError.h"
-#include "XML\Exceptions\XMLException.h"
-#include "XPath\ResultSerializers\XPathQueryResultSerializer.h"
+#include "..\..\Utils\Exceptions\FileError.h"
+#include "..\XML\Exceptions\XMLException.h"
+#include "..\XPath\ResultSerializers\XPathQueryResultSerializer.h"
 
 void XMLController::openFile(const MyString& path)
 {

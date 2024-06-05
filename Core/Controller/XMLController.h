@@ -1,7 +1,7 @@
 #pragma once
-#include "XML/Repositories/XMLRepository.h"
-#include "../Utils/Messages/ErrorMessageBuilder.h"
-#include "../Utils/Messages/OutputMessageBuilder.h"
+#include "../XML/Repositories/XMLRepository.h"
+#include "../../Utils/Messages/ErrorMessageBuilder.h"
+#include "../../Utils/Messages/OutputMessageBuilder.h"
 
 class XMLController
 {

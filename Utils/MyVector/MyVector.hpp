@@ -65,6 +65,8 @@ public:
 	void erase(int index);
 	void erase(int start, int end);
 	bool erase(std::function<bool(const T&)> pred);
+	MyVector take(size_t count) const;
+	MyVector skip(size_t count) const;
 	void push_back(const T& element);
 	void push_back(T&& element);
 	void append(const T& element, size_t count = 1);
@@ -532,6 +534,38 @@ bool MyVector<T>::erase(std::function<bool(const T&)> pred)
 	return deleted;
 }
 
+template<typename T>
+MyVector<T> MyVector<T>::take(size_t count) const
+{
+	if (count >= _size)
+	{
+		count = _size;
+	}
+
+	MyVector<T> result;
+	for (size_t i = 0; i < count; i++)
+	{
+		result.push_back(_data[i]);
+	}
+	return result;
+}
+
+template<typename T>
+MyVector<T> MyVector<T>::skip(size_t count) const
+{
+	if (count >= _size)
+	{
+		count = _size;
+	}
+
+	MyVector<T> result;
+	for (size_t i = count; i < _size; i++)
+	{
+		result.push_back(_data[i]);
+	}
+	return result;
+}
+ 
 template<typename T>
 void MyVector<T>::push_back(const T& element)
 {

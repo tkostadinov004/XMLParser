@@ -4,7 +4,7 @@
 #include "XPathSelectorFactory.h"
 #include "..\ResultSerializers\XPathQueryResultSerializer.h"
 
-MyVector<const XMLNode*> XPathQuery::evaluate(const MySharedPtr<XMLElementNode> root, const MyString& queryString)
+MyVector<const XMLNode*> XPathQuery::evaluate(const MySharedPtr<XMLElementNode>& root, const MyString& queryString)
 {
 	MyVector<const XMLNode*> result;
 	result.push_back(root.get());

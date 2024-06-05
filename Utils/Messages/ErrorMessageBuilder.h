@@ -22,6 +22,10 @@ struct ErrorMessageBuilder
 	{
 		return "Unable to find attribite with key \"" + attributeName + "\" in a node with id \"" + nodeId + "\"";
 	}
+	static MyString INSUFFICIENT_ARGUMENTS_FOR(const MyString& commandName)
+	{
+		return "Insufficient arguments for \"" + commandName + "\"!";
+	}
 	static const char* INVALID_INDEX()
 	{
 		return "Index is out of bounds!";
@@ -29,5 +33,9 @@ struct ErrorMessageBuilder
 	static const char* ATTRIBUTE_NAME_EMPTY()
 	{
 		return "Attribute name cannot be empty!";
+	}
+	static const char* INVALID_COMMAND_NAME()
+	{
+		return "Invalid command name!";
 	}
 };
