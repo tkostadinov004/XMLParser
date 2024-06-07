@@ -67,7 +67,7 @@ void XMLController::help() const
 	std::cout << "child \"id\" \"n\" \t\t\t\t prints the n-th child of a given node\n";
 	std::cout << "text \"id\" \t\t\t\t prints the inner text of a given node\n";
 	std::cout << "delete \"id\" \"attributeName\"\t\t\t\t deletes an attribute of a given node\n";
-	std::cout << "newChild \"id\" \"tagName\"\t\t\t\t adds a new child node to a given node\n";
+	std::cout << "newchild \"id\" \"tagName\"\t\t\t\t adds a new child node to a given node\n";
 	std::cout << "xpath \"query\" \t\t\t\t performs simple XPath queries\n";
 }
 
